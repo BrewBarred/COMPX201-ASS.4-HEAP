@@ -14,18 +14,21 @@ public class Main {
 //        System.out.println("Ride 2 vs. Ride 3 = " + ride2.compareTo(ride3) + " (" + ride2.time + ", " + ride3.time + ")");
 //        System.out.println("Ride 2 vs. Ride 1 = " + ride2.compareTo(ride1) + " (" + ride2.time + ", " + ride1.time + ")");
 
-        MinHeap heap = new MinHeap(10);
-        heap.dump();
-
-        heap.insert(ride1);
-        heap.insert(ride2);
-        heap.insert(ride3);
-        heap.insert(ride2);
-        heap.insert(ride2);
-        heap.insert(ride3);
-        heap.insert(ride1);
-
-        heap.dump();
+//        MinHeap heap = new MinHeap(10);
+//        heap.dump();
+//
+//        heap.insert(ride1);
+//        heap.insert(ride2);
+//        heap.insert(ride3);
+//        heap.insert(ride2);
+//        heap.insert(ride2);
+//        heap.insert(ride3);
+//        heap.insert(ride1);
+//
+//        heap.dump();
+        Ride[] rideArray = {ride1, ride2, ride3, ride1, ride2, ride3};
+        HeapPrinter printer = new HeapPrinter();
+        printer.print(rideArray);
     } // end main
 
 } // end class
