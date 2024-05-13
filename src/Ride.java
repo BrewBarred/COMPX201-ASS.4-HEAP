@@ -6,7 +6,9 @@ import java.sql.Time;
  */
 public class Ride {
     /**
-     * Writes debug messages to the console when enabled (true) - FOR DEVELOPER USE ONLY
+     * ~ FOR DEVELOPER USE ONLY! ~<br><br>
+     *
+     * True if debugging mode should be enabled, else false
      */
     private boolean debugging = true;
     /**
