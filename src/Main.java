@@ -32,13 +32,17 @@ public class Main {
 //        heap.dump();
 
         Ride[] rideArray = {null, ride1, ride2, ride3, ride4, ride5, ride6};
-        Ride[] rideArray2 = {ride1, ride2, null, ride3, null, ride4, null, ride5, ride6};
+        Ride[] rideArray2 = {ride1, ride2, null, ride3, null, ride4, null, ride5, ride6, null};
+        Ride[] rideArray3 = {null, null, null, null, null, null};
+        Ride[] rideArray4 = {};
+        Ride[] rideArray5 = {ride1, ride2, null, ride3, null, ride4, null, ride5, ride6, null, ride1, ride2, null, ride3, null, ride4, null, ride5, ride6, null};
+
         HeapPrinter printer = new HeapPrinter();
-        for (Ride ride : rideArray)
+        for (Ride ride : rideArray2)
             heap.insert(ride);
 
         printer.printID(heap.rideArray);
-        //printer.printTime(heap.rideArray);
+        printer.printTime(heap.rideArray);
         printer.printArray(heap.rideArray);
 
     } // end main
