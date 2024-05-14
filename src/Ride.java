@@ -100,7 +100,17 @@ public class Ride {
      *          1 if this rides timestamp is later than that of the compared ride
      */
     public int compareTo(Ride ride) {
-        return this.time.compareTo(ride.time);
+        try {
+            if (ride == null)
+                throw new NullPointerException("Unable to compare 'Ride' objects, the passed 'Ride' object was null!");
+
+            return this.time.compareTo(ride.time);
+
+        } catch (Exception e) {
+            System.out.println(e);
+            return Integer.MIN_VALUE;
+
+        } // end int
 
     } // end int
 

@@ -1,17 +1,20 @@
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 /**
- * Creates a new dynamic replaceable minimum heap data strucutre which stores custom 'Ride' objects ordered by their scheduled timestamps
+ * Creates a new dynamic replaceable minimum heap data structure which stores custom 'Ride' objects ordered by their scheduled timestamps
  */
 public class MinHeap {
+    /**
+     * The array of 'Ride' objects stored in this heap
+     */
+    Ride[] rideArray;
     /**
      * ~ FOR DEVELOPER USE ONLY! ~ <br><br>
      *
      * True if debugging mode should be enabled, else false
      */
     private boolean debugging = true;
-    /**
-     * The array of 'Ride' objects stored in this heap
-     */
-    private Ride[] rideArray;
     /**
      * The current position in the heap
      */
@@ -31,6 +34,17 @@ public class MinHeap {
      * @param r The ride object being added to the heap
      */
     public void insert(Ride r) {
+        if (r == null)
+            return;
+
+        debug("Max Capacity: " + (next > rideArray.length) + String.format(" (%d, %d)", next, rideArray.length));
+
+        if (next > rideArray.length) {
+            debug("Array capacity has been reached! Doubling array size...");
+            rideArray = Arrays.copyOf(rideArray, rideArray.length * 2);
+
+        } // end if
+
         rideArray[next] = r;
         upHeap();
         next++;
@@ -108,7 +122,7 @@ public class MinHeap {
     /**
      * Performs the up heap operation after an insertion
      */
-    public void upHeap() {
+    private void upHeap() {
         // sets child ride index to match the index of the most recently added ride in the heap
         int indexChild = next;
         System.out.println("Index child = " + indexChild);
@@ -132,6 +146,19 @@ public class MinHeap {
 
     } // end void
 
+    /**
+     * Performs the down heap operation after the removal of a ride from the heap or for the heapify function
+     */
+    private void downHeap() {
+
+
+    } // end void
+
+    /**
+     * Swaps the two elements at the passed indices in the heap with each other
+     * @param indexChild The index of the child element being swapped
+     * @param indexParent The index of the parent element being swapped
+     */
     public void swap(int indexChild, int indexParent) {
         // prints informative debug message to console if debugging mode is enabled
         debug(String.format("Child time: %s was less than parent time: %s, swapping ride %d with ride %d",
@@ -142,14 +169,6 @@ public class MinHeap {
         Ride tempRide = rideArray[indexChild];
         rideArray[indexChild] = rideArray[indexParent];
         rideArray[indexParent] = tempRide;
-
-    } // end void
-
-    /**
-     * Performs the down heap operation after the removal of a ride from the heap or for the heapify function
-     */
-    public void downHeap() {
-
 
     } // end void
 
