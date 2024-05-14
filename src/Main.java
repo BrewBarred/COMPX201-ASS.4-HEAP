@@ -41,9 +41,11 @@ public class Main {
         for (Ride ride : rideArray2)
             heap.insert(ride);
 
-        printer.printID(heap.rideArray);
-        printer.printTime(heap.rideArray);
-        printer.printArray(heap.rideArray);
+        printer.printAll(heap.rideArray);
+
+//        printer.printID(heap.rideArray);
+//        printer.printTime(heap.rideArray);
+//        printer.printArray(heap.rideArray);
 
     } // end main
 

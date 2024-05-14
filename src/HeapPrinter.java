@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
  * printTime(Ride[] rideArray)<br>
  * printAll(Ride[] rideArray)<br>
  */
+@SuppressWarnings("CallToPrintStackTrace")
 public class HeapPrinter {
     /**
      * Function to print each element of the passed 'Ride' array starting from the 0th item along with its ID and Timestamp if any exist
@@ -23,6 +24,7 @@ public class HeapPrinter {
      */
     public static void printArray(Ride[] rideArray) {
         try {
+            System.out.println("\nPrinting Ride array elements w/their ID and timestamp..\n");
             // iterates through each element in the array
             for (int i = 0; i < rideArray.length; i++) {
                 // takes the current 'Ride' object being iterated over
@@ -32,14 +34,13 @@ public class HeapPrinter {
                 // fetches the current 'Ride' objects time value
                 String timeStamp = (ride == null ? null : ride.time.toString());
                 // prints the current 'Ride' objects info to the console
-                System.out.println(String.format("%d: Ride ID = %s, Ride Timestamp = %s", i, id, timeStamp));
+                System.out.printf("%d: Ride ID = %s, Ride Timestamp = %s%n", i, id, timeStamp);
 
             } // end for
 
         } catch (Exception e) {
             // print error msg to console w/stack trace
             System.out.println("[HeapPrinter : printArray] Error processing ride array: " + e);
-            // print stack trace to console
             e.printStackTrace();
 
         } // end try
@@ -53,6 +54,7 @@ public class HeapPrinter {
      */
     public static void printID(Ride[] rideArray) {
         try {
+            System.out.println("\nPrinting Ride IDs in as a heap diagram...\n");
             // calls the print method to print the "id" fields of the ride array elements in a heap diagram format
             print(rideArray, "id");
 
@@ -72,6 +74,7 @@ public class HeapPrinter {
      */
     public static void printTime(Ride[] rideArray) {
         try {
+            System.out.println("\nPrinting Ride times in as a heap diagram...\n");
             // calls the print method to print the "time" fields of the ride array elements in a heap diagram format
             print(rideArray, "time");
 
@@ -86,19 +89,28 @@ public class HeapPrinter {
     } // end void
 
     /**
+     * Function to print each element of a 'Ride' arrays ID's + timestamps as they would be positioned in a heap structure,
+     * as well as each element in the array along with their index positions.
+     * @param rideArray The 'Ride' array object being printed
+     */
+    public static void printAll(Ride[] rideArray) {
+        // calls each custom print method one after the other
+        printArray(rideArray);
+        printID(rideArray);
+        printTime(rideArray);
+
+    } // end void
+
+    /**
      * Prints the field value (rideField) of each element in the passed 'Ride' array in a heap diagram format
      * @param rideArray The ride array to iterate through
      * @param rideField The field in the 'Ride' class being retrieved
-     * @throws NoSuchFieldException
-     * @throws IllegalAccessException
      */
     private static void print(Ride[] rideArray, String rideField) {
         try {
             // if the passed rideArray is empty
             if (isNullOrEmpty(rideArray))
                 throw new IndexOutOfBoundsException();
-
-            System.out.println("\nPrinting Heap...\n");
 
             Field field = Ride.class.getDeclaredField(rideField);
             // calculates the amount of levels required to display this heap diagram
@@ -140,7 +152,7 @@ public class HeapPrinter {
                     // takes the length of this 'Ride' objects value
                     int strLength = numStr.length();
                     // calculates the padding for this 'Ride' object
-                    int padding = (maxLength - strLength < 0) ? 0 : maxLength - strLength;
+                    int padding = Math.max(maxLength - strLength, 0);
 
                     // prints this ride object to the console along with its padding
                     System.out.printf("%" + (padding / 2 + strLength + padding - padding / 2) + "s", numStr);
@@ -174,7 +186,7 @@ public class HeapPrinter {
      */
     private static boolean isEmpty(Ride[] rideArray) {
         // ensures the ride array is not null before checking if its length is 0
-        return rideArray == null ? true : rideArray.length == 0;
+        return rideArray == null || rideArray.length == 0;
 
     } // end boolean
 
