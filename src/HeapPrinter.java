@@ -54,7 +54,7 @@ public class HeapPrinter {
      */
     public static void printID(Ride[] rideArray) {
         try {
-            System.out.println("\nPrinting Ride IDs in as a heap diagram...\n");
+            System.out.println("\nPrinting Ride IDs as a heap diagram...\n");
             // calls the print method to print the "id" fields of the ride array elements in a heap diagram format
             print(rideArray, "id");
 
@@ -74,7 +74,7 @@ public class HeapPrinter {
      */
     public static void printTime(Ride[] rideArray) {
         try {
-            System.out.println("\nPrinting Ride times in as a heap diagram...\n");
+            System.out.println("\nPrinting Ride times as a heap diagram...\n");
             // calls the print method to print the "time" fields of the ride array elements in a heap diagram format
             print(rideArray, "time");
 

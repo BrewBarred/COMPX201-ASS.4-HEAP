@@ -1,22 +1,16 @@
 import java.sql.Time;
-//import java.util.Date.*;
 
 /**
- * Constructs a new Ride object used to store the information of each riders request in the ride share app
+ * Constructs a new Ride object used to store the information of each riders request in the ride-share app
  */
+@SuppressWarnings("CallToPrintStackTrace")
 public class Ride {
-    /**
-     * ~ FOR DEVELOPER USE ONLY! ~<br><br>
-     *
-     * True if debugging mode should be enabled, else false
-     */
-    private boolean debugging = true;
     /**
      * The identification number of this ride request
      */
     public int id;
     /**
-     * The timestamp of this ride request
+     * The timestamp of this ride request in 24-hour time format (i.e., 00:00:00 -> 23:59:59)
      */
     public Time time;
     /**
@@ -33,35 +27,133 @@ public class Ride {
      * The end location ID
      */
     public int endId;
+    /**
+     * ~ FOR DEVELOPER USE ONLY! ~<br><br>
+     *
+     * True if debugging mode should be enabled, else false
+     */
+    private final boolean DEBUGGING = true;
 
     /**
      * Constructs a new Ride object to store the information of a ride request
+     * @param id The identification number of this ride request
+     * @param time The timestamp of this ride request in 24-hour time format (i.e., 00:00:00 -> 23:59:59)
+     * @param passengers The name of each passenger in this ride request<br><br>
+     *
+     * Note: Each passenger must be separated using a "," and any
+     * whitespace on either side of the comma will be trimmed<br>
+     *
+     * @param startId The start location ID
+     * @param endId The end location ID
      */
     public Ride(int id, Time time, String passengers, int startId, int endId) {
-        this.id = id;
-        this.time = time;
-        this.passengers = fPassengers(passengers);
-        this.startId = startId;
-        this.endId = endId;
+            this.id = id;
+            this.time = checkTime(time);
+            this.passengers = fPassengers(passengers);
+            this.startId = startId;
+            this.endId = endId;
 
     } // end constructor
+
+    /**
+     * Overrides the default java String.toString() method to return the information of this ride request.
+     * @return A string value representing the information of this ride request neatly formatted
+     */
+    @Override
+    public String toString() {
+        return String.format("--- Ride %03d -------\n", id) +
+                String.format("Time: %tT\n", time) +
+                String.format("Start ID: %d\n", startId) +
+                String.format("End ID: %d\n", endId) +
+                "Passengers:\n" + passengers +
+                "--------------------";
+
+    } // end String override
+
+    /**
+     * Compares this ride against "ride2" by their timestamps
+     * @param ride2 The ride object to compare timestamps against
+     * @return -1 if this rides timestamp is earlier than that of ride2<br><br>
+     *          0 if this rides timestamp is the same as that of ride2<br><br>
+     *          1 if this rides timestamp is later than that of ride2
+     */
+    public int compareTo(Ride ride2) {
+        try {
+            if (ride2 == null)
+                throw new NullPointerException("Unable to compare 'Ride' objects, the passed 'Ride' object was null!");
+
+            return time.compareTo(ride2.time);
+
+        } catch (Exception e) {
+            System.out.println("Error comparing time values: " + e);
+            e.printStackTrace();
+            return Integer.MIN_VALUE;
+
+        } // end int
+
+    } // end int
+
+
+    /**
+     * Ensures the passed 'Time' is a valid 24-hour time format
+     * @param time The 'Time' value to check
+     * @return The passed time if it is valid, else returns null
+     */
+    private Time checkTime(Time time) {
+        try {
+            debug("Validating time: " + time);
+            if (!isValidTime(time))
+                throw new IllegalArgumentException("Invalid time \"" + time + "\" value passed! Please ensure time is between 00:00:00 inclusive and 24:00:00 exclusive...");
+
+            return time;
+
+        } catch (Exception e) {
+            System.out.println("Error constructor rider object: " + e);
+            e.printStackTrace();
+            return null;
+
+        } // end try
+
+    } // end time
+
+    /**
+     * Ensures the passed 'Time' is a valid 24-hour time format
+     * @param time The 'Time' value to check
+     * @return True if the  passed time is valid, else returns false
+     */
+    private boolean isValidTime(Time time) {
+        // split passed time into a string array
+        String[] splitTime = time.toString().split(":");
+        int hour = Integer.parseInt(splitTime[0]);
+        int mins = Integer.parseInt(splitTime[1]);
+        int secs = Integer.parseInt(splitTime[2]);
+
+        // ensure each time component is valid
+        boolean validHour = hour >= 0 && hour < 24;
+        boolean validMins = mins >= 0 && mins < 60;
+        boolean validSecs = secs >= 0 && secs < 60;
+
+        // return true if all time components are valid
+        return validHour && validMins && validSecs;
+
+    } // end time
 
     /**
      * Formats the passed passenger string ready for display
      * @param passengers A string value representing each passenger in this ride request with each passenger after the first separated by a comma
      * @return A string value representing each passenger in this ride request on a new line
      */
-    public String fPassengers(String passengers) {
+    private String fPassengers(String passengers) {
         // splits each passenger
         String[] passengerArray = passengers.split(",");
         StringBuilder fPassengers = new StringBuilder();
 
         // checks if there is at least one valid passenger in the array before iterating
-        if (passengerArray.length > 0 && passengers.trim().length() > 0) {
+        if (passengerArray.length > 0 && !passengers.trim().isEmpty()) {
             // iterates through the array of passengers
-            for (int i = 0; i < passengerArray.length; i++)
-                // formats each passenger in the array ready for display
-                fPassengers.append(passengerArray[i].trim()).append("\n");
+            // formats each passenger in the array ready for display
+            for (String s : passengerArray)
+                fPassengers.append(s.trim()).append("\n");
 
             return fPassengers.toString();
 
@@ -73,48 +165,6 @@ public class Ride {
 
     } // end String
 
-
-
-    /**
-     * Overrides the default java String.toString() method to return the information of this ride request.
-     * @return A string value representing the information of this ride request neatly formatted
-     */
-    @Override
-    public String toString() {
-        StringBuilder str = new StringBuilder();
-        str.append(String.format("--- Ride %03d -------\n", id))
-                .append(String.format("Time: %tT\n", time))
-                .append(String.format("Start ID: %d\n", startId))
-                .append(String.format("End ID: %d\n", endId))
-                .append("Passengers:\n" + passengers)
-                .append("--------------------");
-        return str.toString();
-
-    } // end String override
-
-    /**
-     * Compares two 'Ride' objects against each other by their timestamps
-     * @param ride The ride object to compare timestamps against
-     * @return -1 if this rides timestamp is earlier than that of the compared ride OR<br>
-     *          0 if this rides timestamp is the same as that of the compared ride OR<br>
-     *          1 if this rides timestamp is later than that of the compared ride
-     */
-    public int compareTo(Ride ride) {
-        try {
-            if (ride == null)
-                throw new NullPointerException("Unable to compare 'Ride' objects, the passed 'Ride' object was null!");
-
-            return this.time.compareTo(ride.time);
-
-        } catch (Exception e) {
-            System.out.println(e);
-            return Integer.MIN_VALUE;
-
-        } // end int
-
-    } // end int
-
-
     /**
      * ~ FOR DEVELOPER USE ONLY ~<br><br>
      *
@@ -123,8 +173,8 @@ public class Ride {
      */
     private void debug(String msg) {
         // if debugging mode has been enabled
-        if (debugging)
-            System.out.println("DEBUG: " + msg);
+        if (DEBUGGING)
+            System.out.println("[DEBUG] " + msg);
 
     } // end debug
 

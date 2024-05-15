@@ -7,7 +7,7 @@ public class Main {
         Ride ride3 = new Ride(420, Time.valueOf("42:42:42"), "Test 7, Test 8, Test 9", 120, 3);
         Ride ride4 = new Ride(123, Time.valueOf("04:20:00"), "Test 10, Test 11, Test 12", 1, 420);
         Ride ride5 = new Ride(6912, Time.valueOf("12:00:00"), "Test 13, Test 14, Test 15", 80, 420000);
-        Ride ride6 = new Ride(421, Time.valueOf("24:00:00"), "Test 16, Test 17, Test 18", 0, 89);
+        Ride ride6 = new Ride(421, Time.valueOf("00:00:00"), "Test 16, Test 17, Test 18", 0, 89);
 
 //        System.out.println(ride1);
 //        System.out.println(ride2);
@@ -18,7 +18,7 @@ public class Main {
 //        System.out.println("Ride 2 vs. Ride 3 = " + ride2.compareTo(ride3) + " (" + ride2.time + ", " + ride3.time + ")");
 //        System.out.println("Ride 2 vs. Ride 1 = " + ride2.compareTo(ride1) + " (" + ride2.time + ", " + ride1.time + ")");
 
-        MinHeap heap = new MinHeap(10);
+        MinHeap heap = new MinHeap();
 //        heap.dump();
 //
 //        heap.insert(ride1);
@@ -38,10 +38,17 @@ public class Main {
         Ride[] rideArray5 = {ride1, ride2, null, ride3, null, ride4, null, ride5, ride6, null, ride1, ride2, null, ride3, null, ride4, null, ride5, ride6, null};
 
         HeapPrinter printer = new HeapPrinter();
-        for (Ride ride : rideArray2)
+        for (Ride ride : rideArray5)
             heap.insert(ride);
 
-        printer.printAll(heap.rideArray);
+        printer.printTime(heap.rideArray);
+        System.out.println(String.format("[TEST] Attempting to remove ride1 from the heap... Ride ID: %d, Ride Timestamp: %s", ride1.id, ride1.time));
+        heap.remove(ride1);
+        printer.printTime(heap.rideArray);
+        System.out.println("Attempting to remove a ride that's already been removed...");
+        heap.remove(ride1);
+        System.out.println("Attempting to remove the root ride...");
+        heap.remove(ride6);
 
 //        printer.printID(heap.rideArray);
 //        printer.printTime(heap.rideArray);
