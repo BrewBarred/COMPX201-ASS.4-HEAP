@@ -3,7 +3,6 @@ import java.sql.Time;
 /**
  * Constructs a new Ride object used to store the information of each riders request in the ride-share app
  */
-@SuppressWarnings("CallToPrintStackTrace")
 public class Ride {
     /**
      * The identification number of this ride request
@@ -47,8 +46,9 @@ public class Ride {
      * @param endId The end location ID
      */
     public Ride(int id, Time time, String passengers, int startId, int endId) {
+        //NOTE: Validate parameters - Negative numbers, and valid string for time (split by : and ensure length is 3 with numbers only)
             this.id = id;
-            this.time = checkTime(time);
+            this.time = time;
             this.passengers = fPassengers(passengers);
             this.startId = startId;
             this.endId = endId;
@@ -71,72 +71,62 @@ public class Ride {
     } // end String override
 
     /**
-     * Compares this ride against "ride2" by their timestamps
-     * @param ride2 The ride object to compare timestamps against
-     * @return -1 if this rides timestamp is earlier than that of ride2<br><br>
-     *          0 if this rides timestamp is the same as that of ride2<br><br>
-     *          1 if this rides timestamp is later than that of ride2
+     * Compares the extended ride against "ride2" by their timestamps
+     * @param ride2 The ride object to compare the extended rides timestamp against
+     * @return -1 if the extended rides timestamp is earlier than that of ride2<br><br>
+     *          0 if the extended rides timestamp is the same as that of ride2<br><br>
+     *          1 if the extended rides timestamp is later than that of ride2
      */
     public int compareTo(Ride ride2) {
-        try {
-            if (ride2 == null)
-                throw new NullPointerException("Unable to compare 'Ride' objects, the passed 'Ride' object was null!");
-
-            return time.compareTo(ride2.time);
-
-        } catch (Exception e) {
-            System.out.println("Error comparing time values: " + e);
-            e.printStackTrace();
+        if (ride2 == null) {
+            debug("Unable to compare 'Ride' objects, the passed 'Ride' object was null!");
             return Integer.MIN_VALUE;
 
-        } // end int
+        } // end if
+
+        return time.compareTo(ride2.time);
 
     } // end int
 
-
-    /**
-     * Ensures the passed 'Time' is a valid 24-hour time format
-     * @param time The 'Time' value to check
-     * @return The passed time if it is valid, else returns null
-     */
-    private Time checkTime(Time time) {
-        try {
-            debug("Validating time: " + time);
-            if (!isValidTime(time))
-                throw new IllegalArgumentException("Invalid time \"" + time + "\" value passed! Please ensure time is between 00:00:00 inclusive and 24:00:00 exclusive...");
-
-            return time;
-
-        } catch (Exception e) {
-            System.out.println("Error constructor rider object: " + e);
-            e.printStackTrace();
-            return null;
-
-        } // end try
-
-    } // end time
-
-    /**
-     * Ensures the passed 'Time' is a valid 24-hour time format
-     * @param time The 'Time' value to check
-     * @return True if the  passed time is valid, else returns false
-     */
-    private boolean isValidTime(Time time) {
-        // split passed time into a string array
-        String[] splitTime = time.toString().split(":");
-        int hour = Integer.parseInt(splitTime[0]);
-        int mins = Integer.parseInt(splitTime[1]);
-        int secs = Integer.parseInt(splitTime[2]);
-
-        // ensure each time component is valid
-        boolean validHour = hour >= 0 && hour < 24;
-        boolean validMins = mins >= 0 && mins < 60;
-        boolean validSecs = secs >= 0 && secs < 60;
-
-        // return true if all time components are valid
-        return validHour && validMins && validSecs;
-
-    } // end time
+//    /**
+//     * Ensures the passed 'Time' is a valid 24-hour time format
+//     * @param time The 'Time' value to check
+//     * @return The passed time if it is valid, else returns null
+//     */
+//    private Time checkTime(Time time) {
+//            debug("Validating time: " + time);
+//
+//            if (!isValidTime(time)) {
+//                debug("Invalid time \"" + time + "\" value passed! Please ensure time is between 00:00:00 inclusive and 24:00:00 exclusive...");
+//                return null;
+//
+//            } // end if
+//
+//            return time;
+//
+//    } // end time
+//
+//    /**
+//     * Ensures the passed 'Time' is a valid 24-hour time format
+//     * @param time The 'Time' value to check
+//     * @return True if the passed time is valid, else returns false
+//     */
+//    private boolean isValidTime(Time time) {
+//        // split passed time into a string array
+//        String[] splitTime = time.toString().split(":");
+//        int hour = Integer.parseInt(splitTime[0]);
+//        int mins = Integer.parseInt(splitTime[1]);
+//        int secs = Integer.parseInt(splitTime[2]);
+//
+//        // ensure each time component is valid
+//        boolean validHour = hour >= 0 && hour < 24;
+//        boolean validMins = mins >= 0 && mins < 60;
+//        boolean validSecs = secs >= 0 && secs < 60;
+//
+//        // return true if all time components are valid
+//        return validHour && validMins && validSecs;
+//
+//    } // end time
 
     /**
      * Formats the passed passenger string ready for display
@@ -144,16 +134,16 @@ public class Ride {
      * @return A string value representing each passenger in this ride request on a new line
      */
     private String fPassengers(String passengers) {
-        // splits each passenger
+        // splits each passenger by comma
         String[] passengerArray = passengers.split(",");
+        // creates a string builder object for efficient string concatenation
         StringBuilder fPassengers = new StringBuilder();
 
         // checks if there is at least one valid passenger in the array before iterating
         if (passengerArray.length > 0 && !passengers.trim().isEmpty()) {
             // iterates through the array of passengers
-            // formats each passenger in the array ready for display
-            for (String s : passengerArray)
-                fPassengers.append(s.trim()).append("\n");
+            for (String passenger : passengerArray)
+                fPassengers.append(passenger.trim()).append("\n");
 
             return fPassengers.toString();
 

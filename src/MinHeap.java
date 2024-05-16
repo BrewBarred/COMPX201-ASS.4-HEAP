@@ -39,24 +39,24 @@ public class MinHeap {
      * @param r The ride object being added to the heap
      */
     public void insert(Ride r) {
-            // validates the passed ride before inserting it into the heap
-            if (this.hasRide(r)) {
-                debug("Unable to insert the passed ride! Ride is invalid or already contained in this heap...");
-                return;
+        // validates the passed ride before inserting it into the heap
+        if (this.hasRide(r)) {
+            debug("Unable to insert the passed ride! Ride is invalid or already contained in this heap...");
+            return;
 
-            } // end if
+        } // end if
 
-            if (next >= rideArray.length) {
-                debug("Unable to insert the passed ride, maximum ride limit has been reached! Max capacity: " + MAX_CAPACITY);
-                return;
+        if (next >= rideArray.length) {
+            debug("Unable to insert the passed ride, maximum ride limit has been reached! Max capacity: " + MAX_CAPACITY);
+            return;
 
-            } // end if
+        } // end if
 
-            // sets the next spare slot in the heap to the passed 'Ride' object
-            rideArray[next] = r;
-            next++;
-            // performs up-heap to maintain heap order
-            upHeap();
+        // sets the next spare slot in the heap to the passed 'Ride' object
+        rideArray[next] = r;
+        // performs up-heap to maintain heap order
+        upHeap();
+        next++;
 
     } // end void
 
@@ -65,40 +65,42 @@ public class MinHeap {
      * @param r The ride object being removed from the heap
      */
     public Ride remove(Ride r) {
-            if (!hasRide(r)) {
-                debug("Unable to remove the passed ride from the heap, ride was not found!");
-                return null;
+        // return early if the passed ride is not contained in the heap
+        if (!hasRide(r)) {
+            debug("Unable to remove the passed ride from the heap, ride was not found!");
+            return null;
 
-            } // end if
+        } // end if
 
-            debug("Attempting to remove ride... ID = " + r.id);
+        // stores the index of the passed ride in the heap
+        int indexRide = 0;
+        // fetches the index of the last ride in the heap
+        int indexLast = next - 1;
 
-            // stores the index of the passed ride in the heap
-            int indexRide = 0;
-            // iterate through the heap to fetch the index of the passed 'Ride'
-            for (int i = 0; i < rideArray.length; i++)
-                if (rideArray[i] == r)
-                    indexRide = i;
+        debug(String.format("Attempting to remove ride... ID = %d, Timestamp = %s", r.id, r.time.toString()));
 
-            debug("Successfully found ride at index: " + indexRide);
+        // iterate through the heap to fetch the index of the passed 'Ride'
+        for (int i = 0; i < rideArray.length; i++)
+            if (rideArray[i] == r)
+                indexRide = i;
 
-            // fetches the index of the last ride in the heap
-            int indexLast = next - 1;
-            // if the last element is not the root element
-            if (indexRide != indexLast)
-                // swap the last element with the first
-                swap(indexRide, indexLast);
+        debug("Successfully found ride at index: " + indexRide);
 
-            // delete the last element
-            rideArray[indexLast] = null;
-            // down heap to maintain heap order
-            downHeap();
-            // decrement the next element since one node has been removed now
-            next--;
+        // if the last element is not the root element
+        if (indexRide != indexLast)
+            // swap the last element with the first
+            swap(indexRide, indexLast);
 
-            debug(("Successfully removed ride at index \"" + (next) + "\""));
+        // delete the last element
+        rideArray[indexLast] = null;
+        // down heap to maintain heap order
+        downHeap();
+        // decrement the next element since one node has been removed now
+        next--;
 
-            return rideArray[next - 1];
+        debug(("Successfully removed the passed ride from the heap!"));
+
+        return rideArray[next - 1];
 
     } // end void
 
@@ -112,6 +114,7 @@ public class MinHeap {
             // if the current element is a Ride object, then the heap is not empty
             if (element instanceof Ride)
                 return false;
+
         // else, the heap is empty since no ride objects were found
         return true;
     } // end boolean
@@ -130,8 +133,9 @@ public class MinHeap {
      * @param rides The ride array to being put into heap order
      * @param rideNum The current ride number
      */
-    public void heapify(Ride[] rides, int rideNum) {
-
+    public Ride[] heapify(Ride[] rides, int rideNum) {
+        downHeap(rides, rideNum);
+        return rides;
 
     } // end void
 
@@ -159,7 +163,7 @@ public class MinHeap {
      */
     private void upHeap() {
         // sets child ride index to match the index of the most recently added ride in the heap
-        int indexChild = next - 1;
+        int indexChild = next;
 
         // while child ride is not the root of the heap
         while (indexChild > 1) {
@@ -167,7 +171,7 @@ public class MinHeap {
             int indexParent = indexChild / 2;
 
             // if the child rides timestamp is less than the parent rides timestamp
-            if (rideArray[indexChild].compareTo(rideArray[indexParent]) < 0)
+            if (isSmaller(rideArray, next - 1, indexChild, indexParent))
                 // swaps the child ride with the parent ride
                 swap(indexChild, indexParent);
             else
@@ -184,49 +188,56 @@ public class MinHeap {
     } // end void
 
     /**
-     * Performs the down heap operation after the removal of a ride from the heap or for the heapify function
+     * Performs the down-heap operation on this heap
      */
     private void downHeap() {
-        // sets child ride index to match the index of the most recently added ride in the heap
+        downHeap(rideArray, next);
+
+    } // end void
+
+    /**
+     * Performs the down-heap operation on the passed array, generally used after the removal of a ride from the heap or for the heapify function
+     * @param rideArray The array to perform the down-heap function on
+     * @param rideNum The number of rides in the passed heap
+     */
+    private void downHeap(Ride[] rideArray, int rideNum) {
        // int indexSmallest;
         int indexParent = 1;
 
-        // while child ride is not the root of the heap
-        while (indexParent < next) {
-            // grabs child indices
+        // loop until the parent is bigger than the array size
+        while (indexParent < rideNum) {
+            // indices of left and right child
             int indexLeft = indexParent * 2;
             int indexRight = indexParent * 2 + 1;
+            // index of the smallest value in this iteration
             int indexSmallest = indexLeft;
 
-            System.out.println(String.format("Parent: %d, Left: %d, Right: %d, Smallest: %d, Next: %d", indexParent, indexLeft, indexRight, indexSmallest, next));
+            debug(String.format("Parent: %d, Left: %d, Right: %d, Smallest: %d, Next: %d", indexParent, indexLeft, indexRight, indexSmallest, next));
 
-            System.out.println("[1]indexLeft < next && rideArray[indexLeft].compareTo(rideArray[indexParent]) < 0 = " + (indexLeft < next) + " && " + (rideArray[indexLeft].compareTo(rideArray[indexParent]) < 0));
-            System.out.println(String.format("[1]Left = %s, Parent = %s, Result: %d", rideArray[indexLeft].time.toString(), rideArray[indexParent].time.toString(), rideArray[indexLeft].compareTo(rideArray[indexParent])));
             // if the left child is not null and less than the parent
-            if (indexLeft < next && rideArray[indexLeft].compareTo(rideArray[indexParent]) < 0) {
+            if (isSmaller(rideArray, rideNum, indexLeft, indexParent)) {
                 debug(String.format("Swapping left child with parent: Left = %d, Right = %d", indexLeft, indexParent));
                 // updates the parent index to match the new parent
                 indexSmallest = indexLeft;
 
             } // end if
 
-            System.out.println("[2]indexRight < next && rideArray[indexRight].compareTo(rideArray[indexParent]) < 0 = " + (indexRight < next) + " && " + (rideArray[indexRight].compareTo(rideArray[indexParent]) < 0));
-            System.out.println(String.format("[2]Right = %s, Parent = %s, Result: %d", rideArray[indexRight].time.toString(), rideArray[indexParent].time.toString(), rideArray[indexRight].compareTo(rideArray[indexParent])));
-            if (indexRight < next && rideArray[indexRight].compareTo(rideArray[indexParent]) < 0) {
+            // id the right child is not an empty element and less than the parent
+            if (isSmaller(rideArray, rideNum, indexRight, indexParent)) {
                 debug(String.format("Swapping left child with parent: Left = %d, Right = %d", indexRight, indexParent));
-                // updates the parent index to match the new parent
+                // sets the index of the smallest value to the right childs index
                 indexSmallest = indexRight;
 
             } // end if
 
             // if the parent array isn't the smallest, swap parent with the smallest child
-            if (rideArray[indexParent].compareTo(rideArray[indexSmallest]) > 0) {
-                System.out.println(String.format("Index parent was not equal to the smallest index! Parent: %d, Smallest: %d", indexParent, indexSmallest));
+            if (isBigger(rideArray, rideNum, indexParent, indexSmallest)) {
+                debug(String.format("Index parent was not equal to the smallest index! Parent: %d, Smallest: %d", indexParent, indexSmallest));
                 swap(indexSmallest, indexParent);
                 indexParent = indexSmallest;
             }
             else {
-                System.out.println(String.format("Index parent is now the smallest index! Breaking loop... Parent: %d, Smallest: %d", indexParent, indexSmallest));
+                debug(String.format("Index parent is now the smallest index! Breaking loop... Parent: %d, Smallest: %d", indexParent, indexSmallest));
                 break;
             }
 
@@ -249,10 +260,56 @@ public class MinHeap {
             if (ride == r)
                 return true;
 
-        debug("Error! Unable to find the passed ride in the heap... Ride ID: " + r.id);
+        debug("No duplicate ride with ID: " + r.id + " exists in the heap...");
         return false;
 
     } // end boolean
+
+    /**
+     * Compares the ride objects at 'indexRide1' and 'indexRide2' against each other by their timestamps
+     * @param rideArray The array in which the referenced elements are contained
+     * @param indexRide1 The index of the first ride
+     * @param indexRide2 The index of the second ride
+     * @return A boolean value that is true if the ride at 'indexRide1' is smaller than the ride object at 'indexRide2'<br><br>
+     *
+     * Note: If either ride object is null, or if either index exceeds the heap size, this function will return false by default.
+     */
+    private boolean isSmaller(Ride[] rideArray, int rideNum, int indexRide1, int indexRide2) {
+        // fetch both ride objects if their indexes were valid
+        Ride ride1 = indexRide1 < rideNum ? rideArray[indexRide1] : null;
+        Ride ride2 = indexRide2 < rideNum ? rideArray[indexRide2] : null;
+
+        // checks if the indices of either ride is referencing a null element
+        if (ride1 == null || ride2 == null)
+            return false;
+
+        // returns true if ride 1 is smaller than ride 2, else returns false
+        return ride1.compareTo(ride2) < 0;
+
+    } // end void
+
+    /**
+     * Compares the ride objects at 'indexRide1' and 'indexRide2' against each other by their timestamps
+     * @param rideArray The array in which the referenced elements are contained
+     * @param indexRide1 The index of the first ride
+     * @param indexRide2 The index of the second ride
+     * @return A boolean value that is true if the ride at 'indexRide1' is bigger than the ride object at 'indexRide2'<br><br>
+     *
+     * Note: If either ride object is null, or if either index exceeds the heap size, this function will return false by default.
+     */
+    private boolean isBigger(Ride[] rideArray, int rideNum, int indexRide1, int indexRide2) {
+        // fetch both ride objects if their indexes were valid
+        Ride ride1 = indexRide1 < rideNum ? rideArray[indexRide1] : null;
+        Ride ride2 = indexRide2 < rideNum ? rideArray[indexRide2] : null;
+
+        // checks if the indices of either ride is referencing a null element
+        if (ride1 == null || ride2 == null)
+            return false;
+
+        // returns true if ride 1 is smaller than ride 2, else returns false
+        return ride1.compareTo(ride2) < 0;
+
+    } // end void
 
     /**
      * Swaps the two elements at the passed indices in the heap with each other
