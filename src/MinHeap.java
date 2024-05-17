@@ -139,6 +139,14 @@ public class MinHeap {
      * @param rideNum The current ride number
      */
     public Ride[] heapify(Ride[] rides, int rideNum) {
+        // ensure there is at least 2 rides in the heap before heapifying
+        if (next <= 2) {
+            debug("Unable to heapify the passed ride array, must have at least 2 rides before heapifying...");
+            return null;
+
+        } // end if
+
+
         downHeap(rides, rideNum);
         return rides;
 
@@ -175,22 +183,23 @@ public class MinHeap {
             // grabs parent ride index
             int indexParent = indexChild / 2;
 
-            System.out.println(String.format(" Upheap: %s is less than %s? " + isSmaller(rideArray, next, indexChild, indexParent), rideArray[indexChild].time.toString(), rideArray[indexParent].time.toString()));
+            //System.out.println(String.format(" Upheap: %s is less than %s? " + isParentBigger(rideArray, next, indexChild), rideArray[indexChild].time.toString(), rideArray[indexParent].time.toString()));
 
             // if the child rides timestamp is less than the parent rides timestamp
-            if (isSmaller(rideArray, next, indexChild, indexParent))
+            if (isParentBigger(rideArray, next, indexChild))
                 // swaps the child ride with the parent ride
                 swap(indexChild, indexParent);
             else
                 // else writes informative debug message to console if debugging mode is enabled
-                debug(String.format("Child time: %s was greater than Parent time: %s, no swap was made",
+                debug(String.format("UPHEAP: Child time: %s was greater than Parent time: %s, no swap was made",
                         rideArray[indexChild].time.toString(), rideArray[indexParent].time.toString()));
 
-            debug(String.format("Setting child index %d to parent index %d", indexChild, indexParent));
+            debug(String.format("UPHEAP: Child index is now set to: %d", indexParent));
             // sets child ride index to match parent ride index to continue up the heap for ordering
             indexChild = indexParent;
 
         } // end while
+        debug("UPHEAP: Upheap complete!");
 
     } // end void
 
@@ -208,7 +217,7 @@ public class MinHeap {
      * @param rideNum The number of rides in the passed heap
      */
     private void downHeap(Ride[] rideArray, int rideNum) {
-       // int indexSmallest;
+        // int indexSmallest;
         int indexParent = 1;
 
         HeapPrinter printer = new HeapPrinter();
@@ -221,20 +230,20 @@ public class MinHeap {
             // index of the smallest value in this iteration
             int indexSmallest = indexLeft;
 
-            debug(String.format("Parent: %d, Left: %d, Right: %d, Smallest: %d, Next: %d", indexParent, indexLeft, indexRight, indexSmallest, next));
-            debug(String.format(" %d is smaller than %d " + isSmaller(rideArray, rideNum, indexLeft, indexParent), indexLeft, indexParent));
+            debug(String.format("DOWNHEAP: Parent: %d, Left: %d, Right: %d, Smallest: %d, Next: %d", indexParent, indexLeft, indexRight, indexSmallest, next));
+            debug(String.format("DOWNHEAP: %s is smaller than %d", isParentBigger(rideArray, rideNum, indexLeft), indexLeft));
 
             // if the left child is not null and less than the parent
-            if (isSmaller(rideArray, rideNum, indexLeft, indexParent)) {
-                debug(String.format("Swapping left child with parent: Left = %d, Right = %d", indexLeft, indexParent));
+            if (isParentBigger(rideArray, rideNum, indexLeft)) {
+                debug(String.format("DOWNHEAP: Swapping left child with parent: Left = %d, Right = %d", indexLeft, indexParent));
                 // updates the parent index to match the new parent
                 indexSmallest = indexLeft;
 
             } // end if
 
             // id the right child is not an empty element and less than the parent
-            if (isSmaller(rideArray, rideNum, indexRight, indexParent)) {
-                debug(String.format("Swapping left child with parent: Left = %d, Right = %d", indexRight, indexParent));
+            if (isParentBigger(rideArray, rideNum, indexRight)) {
+                debug(String.format("DOWNHEAP: Swapping left child with parent: Left = %d, Right = %d", indexRight, indexParent));
                 // sets the index of the smallest value to the right childs index
                 indexSmallest = indexRight;
 
@@ -243,15 +252,16 @@ public class MinHeap {
             //printer.printTime(rideArray, indexSmallest, indexParent);
 
             // if the parent array isn't the smallest, swap parent with the smallest child
-            if (isBigger(rideArray, rideNum, indexParent, indexSmallest)) {
-                debug(String.format("Index parent was not equal to the smallest index! Parent: %d, Smallest: %d", indexParent, indexSmallest));
+            if (isParentBigger(rideArray, rideNum, indexSmallest)) {
+                debug(String.format("DOWNHEAP: Index parent was not equal to the smallest index! Parent: %d, Smallest: %d", indexParent, indexSmallest));
                 swap(indexSmallest, indexParent);
                 indexParent = indexSmallest;
-            }
-            else {
-                debug(String.format("Index parent is now the smallest index! Breaking loop... Parent: %d, Smallest: %d", indexParent, indexSmallest));
+
+            } else {
+                debug(String.format("DOWNHEAP: Index parent is now the smallest index! Breaking loop... Parent: %d, Smallest: %d", indexParent, indexSmallest));
                 break;
-            }
+
+            } // end if
 
         } // end while
 
@@ -272,7 +282,7 @@ public class MinHeap {
             if (ride == r)
                 return true;
 
-        debug("No duplicate ride with ID: " + r.id + " exists in the heap...");
+        //debug("No duplicate ride with ID: " + r.id + " exists in the heap...");
         return false;
 
     } // end boolean
@@ -280,23 +290,24 @@ public class MinHeap {
     /**
      * Compares the ride objects at 'indexRide1' and 'indexRide2' against each other by their timestamps
      * @param rideArray The array in which the referenced elements are contained
-     * @param indexRide1 The index of the first ride
-     * @param indexRide2 The index of the second ride
-     * @return A boolean value that is true if the ride at 'indexRide1' is smaller than the ride object at 'indexRide2'<br><br>
+     * @param indexChild The index of the child that is being compared against its parent
+     * @return A boolean value that is true if the parent of the passed node is bigger, else returns false<br><br>
      *
      * Note: If either ride object is null, or if either index exceeds the heap size, this function will return false by default.
      */
-    private boolean isSmaller(Ride[] rideArray, int rideNum, int indexRide1, int indexRide2) {
-        System.out.println(String.format(" isSmaller: index1: %d, index2: %d, rideNum: %d", indexRide1, indexRide2, rideNum));
+    private boolean isParentBigger(Ride[] rideArray, int rideNum, int indexChild) {
         // fetch both ride objects if their indexes were valid
-        Ride ride1 = indexRide1 <= rideNum ? rideArray[indexRide1] : null;
-        Ride ride2 = indexRide2 <= rideNum ? rideArray[indexRide2] : null;
+        Ride ride1 = indexChild <= rideNum ? rideArray[indexChild] : null;
+        Ride ride2 = indexChild / 2 <= rideNum ? rideArray[indexChild / 2] : null;
+
+        debug(String.format("ISPARENTBIGGER: indexChild: %d, indexParent: %d", indexChild, indexChild / 2));
 
         // checks if the indices of either ride is referencing a null element
         if (ride1 == null || ride2 == null) {
-            System.out.println("Unable to compare rides! Ride 1: " + ride1 + " Ride 2: " + ride2);
+            System.out.println("Unable to compare rides! At least one ride was null...");
             return false;
-        }
+
+        } // end if
 
         // returns true if ride 1 is smaller than ride 2, else returns false
         return ride1.compareTo(ride2) < 0;
@@ -304,18 +315,17 @@ public class MinHeap {
     } // end void
 
     /**
-     * Compares the ride objects at 'indexRide1' and 'indexRide2' against each other by their timestamps
+     * Compares the ride objects at 'indexChild' and 'indexRide2' against each other by their timestamps
      * @param rideArray The array in which the referenced elements are contained
-     * @param indexRide1 The index of the first ride
-     * @param indexRide2 The index of the second ride
-     * @return A boolean value that is true if the ride at 'indexRide1' is bigger than the ride object at 'indexRide2'<br><br>
+     * @param indexChild The index of the child that is being compared against its parent
+     * @return A boolean value that is true if the parent of the passed node is smaller, else returns false<br><br>
      *
      * Note: If either ride object is null, or if either index exceeds the heap size, this function will return false by default.
      */
-    private boolean isBigger(Ride[] rideArray, int rideNum, int indexRide1, int indexRide2) {
+    private boolean isParentSmaller(Ride[] rideArray, int rideNum, int indexChild) {
         // fetch both ride objects if their indexes were valid
-        Ride ride1 = indexRide1 <= rideNum ? rideArray[indexRide1] : null;
-        Ride ride2 = indexRide2 <= rideNum ? rideArray[indexRide2] : null;
+        Ride ride1 = indexChild <= rideNum ? rideArray[indexChild] : null;
+        Ride ride2 = indexChild / 2 <= rideNum ? rideArray[indexChild / 2] : null;
 
         // checks if the indices of either ride is referencing a null element
         if (ride1 == null || ride2 == null)
@@ -337,7 +347,7 @@ public class MinHeap {
         Ride parent = rideArray[indexParent];
 
         // prints current time values of child/parent nodes
-        debug(String.format("Child time: %s was less than parent time: %s", child.time.toString(), parent.time.toString()));
+        debug(String.format("Child time: %s was less than parent time: %s, attempting to swap values...", child.time.toString(), parent.time.toString()));
 
         // swaps child with parent
         Ride tempChild = child;
