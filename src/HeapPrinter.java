@@ -56,7 +56,29 @@ public class HeapPrinter {
         try {
             System.out.println("\nPrinting Ride IDs as a heap diagram...\n");
             // calls the print method to print the "id" fields of the ride array elements in a heap diagram format
-            print(rideArray, "id");
+            print(rideArray, "id", - 1, - 1);
+
+        } catch (Exception e) {
+            // prints error msg to the console w/stack trace
+            System.out.println("[HeapPrinter : printID] Error processing ride array: " + e);
+            e.printStackTrace();
+
+        } // end try
+
+    } // end void
+
+    /**
+     * Function to print each rides ID in the form of a heap structure
+     * @param rideArray The ride array to iterate through for the RideID
+     * @param indexChild The index of the child node being manipulated, used to set color to cyan
+     * @param indexParent The index of the parent node being manipulated, used to set color to purple
+     * @Note: rideArray elements must be of type 'Ride' and its ID field must be named "id".
+     */
+    public static void printID(Ride[] rideArray, int indexChild, int indexParent) {
+        try {
+            System.out.println("\nPrinting Ride IDs as a heap diagram...\n");
+            // calls the print method to print the "id" fields of the ride array elements in a heap diagram format
+            print(rideArray, "id", indexChild, indexParent);
 
         } catch (Exception e) {
             // prints error msg to the console w/stack trace
@@ -76,7 +98,30 @@ public class HeapPrinter {
         try {
             System.out.println("\nPrinting Ride times as a heap diagram...\n");
             // calls the print method to print the "time" fields of the ride array elements in a heap diagram format
-            print(rideArray, "time");
+            print(rideArray, "time", -1, -1);
+
+        } catch (Exception e) {
+            // prints error msg to the console w/stack trace
+            System.out.println("[HeapPrinter : printTimes] Error processing ride array: " + e);
+            // prints the stack trace of the error
+            e.printStackTrace();
+
+        } // end try
+
+    } // end void
+
+    /**
+     * Function to print each element of a 'Ride' arrays timestamps as they would be positioned in a heap structure
+     * @param rideArray The ride array to iterate through for the timestamps
+     * @param indexChild The index of the child node being manipulated, used to set color to cyan
+     * @param indexParent The index of the parent node being manipulated, used to set color to purple
+     * @Note: rideArray elements must be of type 'Ride' and its timestamp field must be named "time".
+     */
+    public static void printTime(Ride[] rideArray, int indexChild, int indexParent) {
+        try {
+            System.out.println("\nPrinting Ride times as a heap diagram...\n");
+            // calls the print method to print the "time" fields of the ride array elements in a heap diagram format
+            print(rideArray, "time", indexChild, indexParent);
 
         } catch (Exception e) {
             // prints error msg to the console w/stack trace
@@ -106,8 +151,17 @@ public class HeapPrinter {
      * @param rideArray The ride array to iterate through
      * @param rideField The field in the 'Ride' class being retrieved
      */
-    private static void print(Ride[] rideArray, String rideField) {
+    private static void print(Ride[] rideArray, String rideField, int indexChild, int indexParent) {
         try {
+            // the default color, used to reset the color after a change
+            String colorDefault = "\033[0m";
+            // the current color being used
+            String colorCurrent = colorDefault;
+            // sets child to cyan when printing
+            String colorChild = "\033[0;36m";
+            // sets parent to purple when printing
+            String colorParent = "\033[0;35m";
+
             // if the passed rideArray is empty
             if (isNullOrEmpty(rideArray))
                 throw new IndexOutOfBoundsException();
@@ -147,15 +201,21 @@ public class HeapPrinter {
                     // takes the current 'Ride' object being iterated over
                     Ride ride = rideArray[currentIndex++];
                     rideField = (ride == null ? "null" : field.get(ride).toString());
-                    // fetches this 'Ride' objects value
-                    String numStr = rideField;
                     // takes the length of this 'Ride' objects value
-                    int strLength = numStr.length();
+                    int strLength = rideField.length();
                     // calculates the padding for this 'Ride' object
                     int padding = Math.max(maxLength - strLength, 0);
 
+                    // set text color
+                    if (currentIndex == indexChild + 1)
+                        colorCurrent = colorChild;
+                    else if (currentIndex == indexParent + 1)
+                        colorCurrent = colorParent;
+                    else
+                        colorCurrent = colorDefault;
+
                     // prints this ride object to the console along with its padding
-                    System.out.printf("%" + (padding / 2 + strLength + padding - padding / 2) + "s", numStr);
+                    System.out.printf(colorCurrent + " %" + (padding / 2 + strLength + padding - padding / 2) + "s ", rideField);
                     // adds child spacing to the console too before moving to the next element
                     for (int j = 0; j < childSpacing; j++)
                         System.out.print(" ");

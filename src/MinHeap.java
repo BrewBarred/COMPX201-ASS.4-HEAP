@@ -80,9 +80,14 @@ public class MinHeap {
         debug(String.format("Attempting to remove ride... ID = %d, Timestamp = %s", r.id, r.time.toString()));
 
         // iterate through the heap to fetch the index of the passed 'Ride'
-        for (int i = 0; i < rideArray.length; i++)
-            if (rideArray[i] == r)
+        for (int i = 0; i < rideArray.length; i++) {
+            if (rideArray[i] == r) {
                 indexRide = i;
+                break;
+
+            } // end if
+
+        } // end for
 
         debug("Successfully found ride at index: " + indexRide);
 
@@ -170,8 +175,10 @@ public class MinHeap {
             // grabs parent ride index
             int indexParent = indexChild / 2;
 
+            System.out.println(String.format(" Upheap: %s is less than %s? " + isSmaller(rideArray, next, indexChild, indexParent), rideArray[indexChild].time.toString(), rideArray[indexParent].time.toString()));
+
             // if the child rides timestamp is less than the parent rides timestamp
-            if (isSmaller(rideArray, next - 1, indexChild, indexParent))
+            if (isSmaller(rideArray, next, indexChild, indexParent))
                 // swaps the child ride with the parent ride
                 swap(indexChild, indexParent);
             else
@@ -204,6 +211,8 @@ public class MinHeap {
        // int indexSmallest;
         int indexParent = 1;
 
+        HeapPrinter printer = new HeapPrinter();
+
         // loop until the parent is bigger than the array size
         while (indexParent < rideNum) {
             // indices of left and right child
@@ -213,6 +222,7 @@ public class MinHeap {
             int indexSmallest = indexLeft;
 
             debug(String.format("Parent: %d, Left: %d, Right: %d, Smallest: %d, Next: %d", indexParent, indexLeft, indexRight, indexSmallest, next));
+            debug(String.format(" %d is smaller than %d " + isSmaller(rideArray, rideNum, indexLeft, indexParent), indexLeft, indexParent));
 
             // if the left child is not null and less than the parent
             if (isSmaller(rideArray, rideNum, indexLeft, indexParent)) {
@@ -229,6 +239,8 @@ public class MinHeap {
                 indexSmallest = indexRight;
 
             } // end if
+
+            //printer.printTime(rideArray, indexSmallest, indexParent);
 
             // if the parent array isn't the smallest, swap parent with the smallest child
             if (isBigger(rideArray, rideNum, indexParent, indexSmallest)) {
@@ -275,13 +287,16 @@ public class MinHeap {
      * Note: If either ride object is null, or if either index exceeds the heap size, this function will return false by default.
      */
     private boolean isSmaller(Ride[] rideArray, int rideNum, int indexRide1, int indexRide2) {
+        System.out.println(String.format(" isSmaller: index1: %d, index2: %d, rideNum: %d", indexRide1, indexRide2, rideNum));
         // fetch both ride objects if their indexes were valid
-        Ride ride1 = indexRide1 < rideNum ? rideArray[indexRide1] : null;
-        Ride ride2 = indexRide2 < rideNum ? rideArray[indexRide2] : null;
+        Ride ride1 = indexRide1 <= rideNum ? rideArray[indexRide1] : null;
+        Ride ride2 = indexRide2 <= rideNum ? rideArray[indexRide2] : null;
 
         // checks if the indices of either ride is referencing a null element
-        if (ride1 == null || ride2 == null)
+        if (ride1 == null || ride2 == null) {
+            System.out.println("Unable to compare rides! Ride 1: " + ride1 + " Ride 2: " + ride2);
             return false;
+        }
 
         // returns true if ride 1 is smaller than ride 2, else returns false
         return ride1.compareTo(ride2) < 0;
@@ -299,8 +314,8 @@ public class MinHeap {
      */
     private boolean isBigger(Ride[] rideArray, int rideNum, int indexRide1, int indexRide2) {
         // fetch both ride objects if their indexes were valid
-        Ride ride1 = indexRide1 < rideNum ? rideArray[indexRide1] : null;
-        Ride ride2 = indexRide2 < rideNum ? rideArray[indexRide2] : null;
+        Ride ride1 = indexRide1 <= rideNum ? rideArray[indexRide1] : null;
+        Ride ride2 = indexRide2 <= rideNum ? rideArray[indexRide2] : null;
 
         // checks if the indices of either ride is referencing a null element
         if (ride1 == null || ride2 == null)
@@ -338,7 +353,7 @@ public class MinHeap {
      * ~ FOR DEVELOPER USE ONLY ~<br><br>
      *
      * Prints debug messages to console if debugging mode is enabled
-     * @param msg
+     * @param msg The debug message to be printed to the console
      */
     private void debug(String msg) {
         if (DEBUGGING)
