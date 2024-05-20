@@ -48,6 +48,17 @@ public class HeapPrinter {
     } // end void
 
     /**
+     * Function to print each element of the passed heap starting from the 0th item along with its ID and Timestamp if any exist
+     * @param heap The heap containing the ride array to iterate through for the Index, ID, and timestamp
+     * @Note: Heap elements must be of type 'Ride', its timestamp field must be named "time"
+     * and its ID field must be named "id". Any unused spaces in the heap should be set to null
+     */
+    public static void printArray(MinHeap heap) {
+        printArray(heap.rides);
+
+    } // end void
+
+    /**
      * Function to print each rides ID in the form of a heap structure
      * @param rideArray The ride array to iterate through for the RideID
      * @Note: rideArray elements must be of type 'Ride' and its ID field must be named "id".
@@ -56,7 +67,7 @@ public class HeapPrinter {
         try {
             System.out.println("\nPrinting Ride IDs as a heap diagram...\n");
             // calls the print method to print the "id" fields of the ride array elements in a heap diagram format
-            print(rideArray, "id", - 1, - 1);
+            print(rideArray, "id", - 1, - 1, null, null);
 
         } catch (Exception e) {
             // prints error msg to the console w/stack trace
@@ -66,6 +77,16 @@ public class HeapPrinter {
         } // end try
 
     } // end void
+    /**
+     * Function to print each elements Ride ID
+     * @param heap The heap containing the ride array to iterate through for the RideID's
+     * @Note: Heap elements must be of type 'Ride' and its ID field must be named "id".
+     */
+    public static void printID(MinHeap heap) {
+        printID(heap.rides);
+
+    } // end void
+
 
     /**
      * Function to print each rides ID in the form of a heap structure
@@ -78,7 +99,7 @@ public class HeapPrinter {
         try {
             System.out.println("\nPrinting Ride IDs as a heap diagram...\n");
             // calls the print method to print the "id" fields of the ride array elements in a heap diagram format
-            print(rideArray, "id", indexChild, indexParent);
+            print(rideArray, "id", indexChild, indexParent, null, null);
 
         } catch (Exception e) {
             // prints error msg to the console w/stack trace
@@ -86,6 +107,16 @@ public class HeapPrinter {
             e.printStackTrace();
 
         } // end try
+
+    } // end void
+
+    /**
+     * Function to print each element of the passed heaps timestamps
+     * @param heap The heap containing the ride array to iterate through for the timestamps
+     * @Note: Heap elements must be of type 'Ride' and its timestamp field must be named "time".
+     */
+    public static void printTime(MinHeap heap) {
+        printTime(heap.rides);
 
     } // end void
 
@@ -98,7 +129,7 @@ public class HeapPrinter {
         try {
             System.out.println("\nPrinting Ride times as a heap diagram...\n");
             // calls the print method to print the "time" fields of the ride array elements in a heap diagram format
-            print(rideArray, "time", -1, -1);
+            print(rideArray, "time", -1, -1, null, null);
 
         } catch (Exception e) {
             // prints error msg to the console w/stack trace
@@ -113,15 +144,50 @@ public class HeapPrinter {
     /**
      * Function to print each element of a 'Ride' arrays timestamps as they would be positioned in a heap structure
      * @param rideArray The ride array to iterate through for the timestamps
-     * @param indexChild The index of the child node being manipulated, used to set color to cyan
-     * @param indexParent The index of the parent node being manipulated, used to set color to purple
+     * @param indexRed The index of the node being manipulated, used to set color to red
      * @Note: rideArray elements must be of type 'Ride' and its timestamp field must be named "time".
      */
-    public static void printTime(Ride[] rideArray, int indexChild, int indexParent) {
+    public static void printTime(Ride[] rideArray, int indexRed) {
+        System.out.println("\nPrinting Ride times as a heap diagram...\n");
+        // sets child to cyan when printing
+        String colorRed = "\033[0;31m";
+        // calls the print method to print the "time" fields of the ride array elements in a heap diagram format
+        print(rideArray, "time", indexRed, -1, colorRed, null);
+
+
+    } // end void
+
+
+    /**
+     * Function to print each element of a 'Ride' arrays timestamps as they would be positioned in a heap structure
+     * @param rideArray The ride array to iterate through for the timestamps
+     * @param indexCyan The index of the node being manipulated, used to set color to cyan (Usually used to show child)
+     * @param indexPurple The index of the node being manipulated, used to set color to purple (Usually used to show parent)
+     * @Note: rideArray elements must be of type 'Ride' and its timestamp field must be named "time".
+     */
+    public static void printTime(Ride[] rideArray, int indexCyan, int indexPurple) {
+            System.out.println("\nPrinting Ride times as a heap diagram...\n");
+            // sets child to cyan when printing
+            String colorCyan = "\033[0;36m";
+            // sets parent to purple when printing
+            String colorPurple = "\033[0;35m";
+            // calls the print method to print the "time" fields of the ride array elements in a heap diagram format
+            print(rideArray, "time", indexCyan, indexPurple, colorCyan, colorPurple);
+
+    } // end void
+
+    /**
+     * Function to print each element of a 'Ride' arrays timestamps as they would be positioned in a heap structure
+     * @param heap The heap containing the ride array to iterate through for the timestamps
+     * @param indexCyan The index of the node being manipulated, used to set color to cyan
+     * @param indexPurple The index of the node being manipulated, used to set color to purple
+     * @Note: rideArray elements must be of type 'Ride' and its timestamp field must be named "time".
+     */
+    public static void printTime(MinHeap heap, int indexCyan, int indexPurple) {
         try {
             System.out.println("\nPrinting Ride times as a heap diagram...\n");
             // calls the print method to print the "time" fields of the ride array elements in a heap diagram format
-            print(rideArray, "time", indexChild, indexParent);
+            printTime(heap.rides, indexCyan, indexPurple);
 
         } catch (Exception e) {
             // prints error msg to the console w/stack trace
@@ -147,20 +213,35 @@ public class HeapPrinter {
     } // end void
 
     /**
+     * Function to print each element of a heaps ride ID's + timestamps
+     * as well as each element in the array along with their index positions.
+     * @param heap The heap containing the ride array whose elements are being printed
+     */
+    public static void printAll(MinHeap heap) {
+        printAll(heap.rides);
+
+    } // end void
+
+    /**
      * Prints the field value (rideField) of each element in the passed 'Ride' array in a heap diagram format
      * @param rideArray The ride array to iterate through
      * @param rideField The field in the 'Ride' class being retrieved
+     * @param index1 The index of the first value to be colored
+     * @param index2 The index of the second value to be colored
+     * @param indexColor1 The color to paint the value at index1
+     * @param indexColor2 The color to paint the value at index2
+     *
      */
-    private static void print(Ride[] rideArray, String rideField, int indexChild, int indexParent) {
+    private static void print(Ride[] rideArray, String rideField, int index1, int index2, String indexColor1, String indexColor2) {
         try {
             // the default color, used to reset the color after a change
             String colorDefault = "\033[0m";
             // the current color being used
             String colorCurrent = colorDefault;
-            // sets child to cyan when printing
-            String colorChild = "\033[0;36m";
-            // sets parent to purple when printing
-            String colorParent = "\033[0;35m";
+            // sets the color for the first passed index
+            String color1 = indexColor1 == null ? colorDefault : indexColor1;
+            // sets the second color
+            String color2 = indexColor2 == null ? colorDefault : indexColor2;
 
             // if the passed rideArray is empty
             if (isNullOrEmpty(rideArray))
@@ -207,10 +288,10 @@ public class HeapPrinter {
                     int padding = Math.max(maxLength - strLength, 0);
 
                     // set text color
-                    if (currentIndex == indexChild + 1)
-                        colorCurrent = colorChild;
-                    else if (currentIndex == indexParent + 1)
-                        colorCurrent = colorParent;
+                    if (currentIndex == index1 + 1)
+                        colorCurrent = color1;
+                    else if (currentIndex == index2 + 1)
+                        colorCurrent = color2;
                     else
                         colorCurrent = colorDefault;
 

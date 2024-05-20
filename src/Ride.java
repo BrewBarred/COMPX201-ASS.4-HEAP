@@ -56,6 +56,15 @@ public class Ride {
     } // end constructor
 
     /**
+     * Converts and returns this rides timestamp as a String
+     * @return A String value equivalent to this rides timestamp
+     */
+    public String getTime() {
+        return time.toString();
+
+    } // end string
+
+    /**
      * Overrides the default java String.toString() method to return the information of this ride request.
      * @return A string value representing the information of this ride request neatly formatted
      */
@@ -71,19 +80,13 @@ public class Ride {
     } // end String override
 
     /**
-     * Compares the extended ride against "ride2" by their timestamps
-     * @param ride2 The ride object to compare the extended rides timestamp against
-     * @return -1 if the extended rides timestamp is earlier than that of ride2<br><br>
-     *          0 if the extended rides timestamp is the same as that of ride2<br><br>
-     *          1 if the extended rides timestamp is later than that of ride2
+     * Compares the extended ride (ride1) against the passed ride (ride2) by their timestamps
+     * @param ride2 The ride object to compare against ride1 by timestamp
+     * @return -1 if the timestamp of ride1 is less than that of ride2<br><br>
+     *          0 if the timestamp of ride1 is equal to that of ride2<br><br>
+     *          1 if the timestamp of ride1 is greater than that of ride2
      */
     public int compareTo(Ride ride2) {
-        if (ride2 == null) {
-            debug("Unable to compare 'Ride' objects, the passed 'Ride' object was null!");
-            return Integer.MIN_VALUE;
-
-        } // end if
-
         return time.compareTo(ride2.time);
 
     } // end int
