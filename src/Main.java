@@ -1,9 +1,11 @@
 import java.sql.Time;
+import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
 
         MinHeap heap = new MinHeap();
+        HeapPrinter printer = new HeapPrinter();
 
         Ride ride1 = new Ride(45, Time.valueOf("4:4:4"), "Test 1, Test 2, Test 3", 420, 6969);
         Ride ride2 = new Ride(32, Time.valueOf("2:2:2"), "Test 4, Test 5, Test 6", 69, 70);
@@ -22,6 +24,11 @@ public class Main {
 
         clearConsole("Inserting ride array 6... Red index represents the value most recently inserted");
         heap.insert(rideArray6);
+        heap.remove(ride7);
+        //heap.remove(ride5);
+        //heap.remove(ride6);
+
+        printer.printTime(heap);
 
     } // end main
 
