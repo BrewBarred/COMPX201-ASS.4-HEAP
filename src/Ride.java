@@ -47,11 +47,11 @@ public class Ride {
      */
     public Ride(int id, Time time, String passengers, int startId, int endId) {
         //NOTE: Validate parameters - Negative numbers, and valid string for time (split by : and ensure length is 3 with numbers only)
-            this.id = id;
-            this.time = time;
-            this.passengers = fPassengers(passengers);
-            this.startId = startId;
-            this.endId = endId;
+        this.id = id;
+        this.time = time;
+        this.passengers = fPassengers(passengers);
+        this.startId = startId;
+        this.endId = endId;
 
     } // end constructor
 

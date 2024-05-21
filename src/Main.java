@@ -15,20 +15,17 @@ public class Main {
         Ride ride6 = new Ride(1, Time.valueOf("1:1:1"), "Test 16, Test 17, Test 18", 0, 89);
         Ride ride7 = new Ride(99, Time.valueOf("7:7:7"), "Test 19", 14, 92);
 
-        Ride[] rideArray = {null, ride1, ride2, ride3, ride4, ride5, ride6};
-        Ride[] rideArray2 = {ride1, ride2, null, ride3, null, ride4, null, ride5, ride6, null};
-        Ride[] rideArray3 = {null, null, null, null, null, null};
-        Ride[] rideArray4 = {};
-        Ride[] rideArray5 = {ride1, ride2, null, ride3, null, ride4, null, ride5, ride6, null, ride1, ride2, null, ride3, null, ride4, null, ride5, ride6, null};
-        Ride[] rideArray6 = {ride1, ride2, ride3, ride4, ride5, ride6, ride7};
+        Ride[] rideArray = {ride1, ride2, ride3, ride4, ride5, ride6, ride7};
 
-        clearConsole("Inserting ride array 6... Red index represents the value most recently inserted");
-        heap.insert(rideArray6);
-        heap.remove(ride7);
-        //heap.remove(ride5);
-        //heap.remove(ride6);
+        //clearConsole("Attempting to Heapify...");
 
-        printer.printTime(heap);
+        //Ride[] rides = heap.sort(rideArray);
+
+        heap.insert(ride2);
+        heap.insert(ride3);
+        heap.insert(ride1);
+        printer.printTime(heap.sort());
+        printer.printArray(heap);
 
     } // end main
 
