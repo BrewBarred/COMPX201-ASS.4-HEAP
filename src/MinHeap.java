@@ -458,8 +458,9 @@ public class MinHeap {
 
         } // end for
 
-        System.out.println("\n\n\n\n\n SORTED \n\n\n\n");
-        printer.printTime(rides);
+        // updates the default heap to match the newly sorted array
+        rides = ridesSorted;
+
         return rides;
 
     } // end ride array
