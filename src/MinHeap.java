@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 /**
  * Creates a new dynamic replaceable minimum heap data structure which stores custom 'Ride' objects ordered by their scheduled timestamps
  */
@@ -15,7 +17,7 @@ public class MinHeap {
     /**
      * The number of vehicles (rides) that the company has available (i.e., the size of the heap)
      */
-    public final int MAX_CAPACITY = 20;
+    public final int MAX_CAPACITY = 21;
     /**
      * The maximum number of passengers per vehicle
      */
@@ -74,8 +76,6 @@ public class MinHeap {
 
         } // end if
 
-        debug("Attempting to insert ride... \n " + r, "insert");
-
         // sets the next spare slot in the heap to the passed 'Ride' object
         rides[next] = r;
         // performs up-heap to maintain heap order
@@ -117,11 +117,10 @@ public class MinHeap {
         // delete the last element
         rides[indexLast] = null;
         // down heap to maintain heap order
-        downHeap(indexRide, rides);
+        downHeap(indexRide);
         // decrement next available node counter
         next--;
 
-        //rides = rideArray;
         return removedRide;
 
     } // end void
@@ -265,51 +264,43 @@ public class MinHeap {
     } // end void
 
     /**
-     * Down heaps the array starting at the root node
-     * @param rideArray
+     * Down heaps the default heap starting at last non-leaf node, swapping each parent to the smallest value out of it, and its children.
      */
-    private void downHeap(Ride[] rideArray) {
-        downHeap(1, rideArray);
-
-    } // end void
-
-    /**
-     * Down heaps the array starting at the root node
-     * @param indexStart The index that the down heap should start from
-     * @param rideArray The ride array that is being down heaped
-     */
-    private void downHeap(int indexStart, Ride[] rideArray) {
+    private void downHeap(int node) {
         // test
         System.out.println("\n\n\n\nDownheaping...\n\n");
-        // gets the size of the heap for an iteration counter
-        int next = getNext(rideArray);
         // stores the index of the smaller child
         int indexSmallest;
         // stores the index of the parent
-        int indexParent = indexStart;
+        int indexParent = node;
 
         while (indexParent < next) {
             // gets child indices
             int indexLeftChild = indexParent * 2;
             int indexRightChild = indexLeftChild + 1;
+
+            //test
+            printer.printTime(rides, indexLeftChild, indexRightChild);
             debug(String.format("Next: %d, IndexParent: %d, IndexLeftChild: %d, IndexRightChild: %d", next, indexParent, indexLeftChild, indexRightChild), "downheap");
 
-            if (!isValidIndices(indexLeftChild, indexRightChild, rideArray)) {
-                debug(String.format("Invalid indices passed! One or more indices were out of the bounds of the array... IndexLeft = %d, IndexRight = %d, ArrayLength = %d", indexLeftChild, indexRightChild, rideArray.length), "downheap");
+            if (!isValidIndices(indexLeftChild, indexRightChild, rides)) {
+                debug(String.format("Invalid indices passed! One or more indices were out of the bounds of the array... IndexLeft = %d, IndexRight = %d, ArrayLength = %d", indexLeftChild, indexRightChild, rides.length), "downheap");
                 break;
 
             } // end if
 
-//            // checks if value at left child is less than right child and swaps them if not
-//            if (isSmaller(indexRightChild, indexLeftChild, rideArray))
-//                swap(indexLeftChild, indexRightChild, rideArray);
+            /*
+            // checks if value at left child is less than right child and swaps them if not
+            if (isSmaller(indexRightChild, indexLeftChild, rides))
+                swap(indexLeftChild, indexRightChild, rides);
+            */
 
             // fetches the index of the child with the smallest timestamp
-            indexSmallest = getSmaller(indexLeftChild, indexRightChild, rideArray);
+            indexSmallest = getSmaller(indexLeftChild, indexRightChild, rides);
 
             // if the parent value is not the smallest, swap and continue, else break the loop
-            if (isSmaller(indexSmallest, indexParent, rideArray)) {
-                swap(indexSmallest, indexParent, rideArray);
+            if (isSmaller(indexSmallest, indexParent, rides)) {
+                swap(indexSmallest, indexParent, rides);
                 indexParent = indexSmallest;
 
             } else {
@@ -322,16 +313,6 @@ public class MinHeap {
 
     } // end void
 
-    /**
-     * Checks if the passed index is within the bounds of the passed array
-     * @param index The index being checked in the passed ride array
-     * @param rideArray The ride array being used to validate bounds
-     * @return A boolean value that is true if the passed index within the bounds of the passed ride array
-     */
-    private boolean isValidIndex(int index, Ride[] rideArray) {
-        return index < rideArray.length && index > 0;
-
-    } // end void
 
     /**
      * Checks if the passed indices are both within the bounds of the passed array
@@ -343,7 +324,18 @@ public class MinHeap {
     private boolean isValidIndices(int index1, int index2, Ride[] rideArray) {
         return isValidIndex(index1, rideArray) && isValidIndex(index2, rideArray);
 
-    } // end void
+    } // end boolean
+
+    /**
+     * Checks if the passed index is within the bounds of the passed array
+     * @param index The index being checked in the passed ride array
+     * @param rideArray The ride array being used to validate bounds
+     * @return A boolean value that is true if the passed index within the bounds of the passed ride array
+     */
+    private boolean isValidIndex(int index, Ride[] rideArray) {
+        return index < rideArray.length && index > 0;
+
+    } // end boolean
 
     /**
      * Puts the default heap in heap order. Starts at the lowest node that could
@@ -377,35 +369,39 @@ public class MinHeap {
     public Ride[] heapify(int rideNum, Ride[] rideArray) {
         // if the passed ride count was below zero, count the rides in the passed array
         if (rideNum <= 1 || rideNum > rideArray.length) {
-            debug("Invalid ride count passed! Must be at least 2 rides in the heap to heapify... RideCount: " + rideNum, "heapify");
-            return null;
+            debug("Invalid ride count passed! Must be at least 2 rides in the heap in order to require heapify, no changes were made... RideCount: " + rideNum, "heapify");
+            return rideArray;
 
         } // end if
 
-        System.out.println("Before conversion...");
-        printer.printArray(rideArray);
+        // if the passed array is greater than the maximum number of vehicles
+        if (rideArray.length > MAX_CAPACITY) {
+            System.out.println("Unable to sort ride array! Passed array was larger than the Max. Capacity of: " + MAX_CAPACITY + ", no changes were made...");
+            return rideArray;
 
-        // if passed array has 0-based indices, convert to 1-based
-        if (rideArray[0] != null)
-            for (int i = rideArray.length - 1; i >= 0; i--)
-                rideArray[i + 1] = rideArray[i];
+        } // end if
 
-        System.out.println("After conversion...");
-        printer.printArray(rideArray);
+        // updates the default heap to match the passed heap
+        rides = rideArray;
 
+        // if passed array has a 0-based index system, convert to 1-based indexing
+        if (rides[0] != null)
+            for (int i = rides.length - 1; i >= 0; i--)
+                rides[i + 1] = rides[i];
+
+        // fetch parent node
         int indexParent = rideNum / 2;
 
-        // starting at least non-leaf node, downheap each root
+        // starting at least non-leaf node and working backwards, downheap each parent node
         for (int i = indexParent; i > 0; i--)
-            downHeap(i, rideArray);
+            downHeap(i);
 
-        // updates the default heap to match the newly heapified array
-        rides = rideArray;
         // test
         System.out.println("Heapify allegedly complete! RidesCount: " + getRideCount(rides) + " RideArrayCount: " + getRideCount(rideArray));
+        printer.printTime(rides, indexParent);
 
         // overrides the default heap with the new heapified array
-        return rideArray;
+        return rides;
 
     } // end ride array
 
@@ -414,52 +410,38 @@ public class MinHeap {
      * @return A ride array ordered by timestamps
      */
     public Ride[] sort() {
-        if (getRideCount(rides) < 2) {
-            System.out.println("Count = " + getRideCount(rides));
+        // if there is none or one ride in the heap, it does not require sorting
+        if (next < 2)
+            return rides;
+
+        // builds a min heap out of the default heap (incase it's not already a minheap)
+        heapify(rides);
+
+        // gets the index of the last ride in the heap
+        int indexLast = next - 1;
+
+        // if index is not within bounds of the array, return unchanged array before iterating
+        if (!isValidIndex(indexLast, rides)) {
+            System.out.println("Unable to sort the passed array! Index was out of bounds...");
             return rides;
 
         } // end if
 
-        // builds a min heap from the passed array
-        Ride[] ridesToSort = heapify(rides);
-        Ride[] ridesSorted = new Ride[MAX_CAPACITY];
-
-        System.out.println(String.format("Ride Count: %d, RideLength: %d, RidesToShortCount: %d, RidesToShortLength: %d",
-                getRideCount(ridesToSort), ridesToSort.length, getRideCount(rides), rides.length));
-
-        // gets the index of the last ride in the heap
-        int indexLast = getRideCount(ridesToSort);
-
-        System.out.println("Valid Index? " + isValidIndex(indexLast, rides) + ", Index: " + indexLast);
-
-        System.out.println(String.format("                   Sorting... IndexLast: %d", indexLast));
-
-        // extracts elements from the heap one by one
+        // loops backwards from the last node in the heap up to the root (index 1)
         for(int i = indexLast; i > 0; i--) {
-            System.out.println(String.format("Sorting... IndexLast: %d, i: %d", indexLast, i));
-
-            //test
-            printer.printTime(ridesToSort, i, 1);
-
+            System.out.println(String.format("                               Swapping Node: " + rides[i].time + " with root: " + rides[1].time));
+            printer.printTime(rides, i);
             // swap the root element with the last element
-            swap(i, 1, ridesToSort);
-
-            //test
-            System.out.println("Swapped values!");
-            //printer.printTime(ridesToSort, i, 1);
-
-            //System.out.println("RideArray: " + rideArray[indexLast - i + 1].getTime() + ", RidesToSortArray: " + ridesToSort[i].time + ", Index1: " + i + " Index2: " + (indexLast - i + 1));
-            // override each element of the default heap with
-            ridesSorted[indexLast - i + 1] = ridesToSort[i];
-            // heapify the unsorted array and repeat until all items are sorted, reducing size of heap each time using 'i'
-            heapify(i, ridesToSort);
-
-            printer.printTime(ridesSorted, i, 1);
+            swap(i, 1, rides);
+            // heapify the shortened array
+            downHeap(i);
 
         } // end for
 
-        // updates the default heap to match the newly sorted array
-        rides = ridesSorted;
+        System.out.println("Post-sorted");
+        printer.printArray(rides);
+
+        // reverse rides array in place
 
         return rides;
 
@@ -482,17 +464,10 @@ public class MinHeap {
         Ride child = rideArray[index1];
         Ride parent = rideArray[index2];
 
-        // test
-        System.out.println(String.format("Swapping values at index %d and %d", index1, index2));
-        //printer.printTime(rideArray, index1, index2);
-
         // swaps child with parent
         Ride tempChild = child;
         rideArray[index1] = parent;
         rideArray[index2] = tempChild;
-
-        // test
-        //printer.printTime(rideArray, index1, index2);
 
     } // end void
 
@@ -505,13 +480,11 @@ public class MinHeap {
      * if no element exists or if either index is out of bounds, this function will return -1
      */
     private int getSmaller(int index1, int index2, Ride[] rideArray) {
-        // test
-        debug(String.format("Fetching smaller value: Index1: %d, Index2: %d", index1, index2), "getSmaller");
         // takes the largest and smallest value of the indices and checks that they are within the bounds of the array
-        if (Math.min(index1, index2) < 0 && Math.max(index1, index2) > rideArray.length)
-            return -1;
-        return isSmaller(index1, index2, rideArray) ? index1 : index2;
+        if (isValidIndices(index1, index2, rideArray))
+            return isSmaller(index1, index2, rideArray) ? index1 : index2;
 
+        return -1;
 
     } // end bool
 
@@ -525,9 +498,9 @@ public class MinHeap {
     private boolean isSmaller(int index1, int index2, Ride[] rideArray) {
         int indexLastRide = getRideCount(rideArray);
 
-        if (Math.max(index1, index2) > indexLastRide || Math.min(index1, index2) < 0) {
-            debug(String.format("Unable to compare timestamps! Index out of bounds error: " +
-                    "Index1 = %d, Index2 = %d, IndexLastRide = %d", index1, index2, indexLastRide), "isSmaller");
+        if (!isValidIndices(index1, index2, rideArray)) {
+            debug(String.format("Unable to compare timestamps! Index out of bounds error: Index1 = %d, Index2 = %d, IndexLastRide = %d",
+                    index1, index2, indexLastRide), "isSmaller");
             return false;
 
         } // end if
@@ -555,7 +528,7 @@ public class MinHeap {
         if (rides1.length == 0)
             return true;
 
-        // each element in both arrays
+        // for each element in both arrays
         for(int i = 1; i < rides1.length; i++) {
             // if we hit null values in both lists at the same time, lists are equal
             if (rides1[i] == null || rides2[i] == null)
