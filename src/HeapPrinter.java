@@ -24,6 +24,19 @@ public class HeapPrinter {
      */
     public static void printArray(Ride[] rideArray) {
         try {
+            if (rideArray == null || rideArray.length == 0) {
+                System.out.println("Unable to print the passed ride array! Ride array was null or had no elements in it...");
+                return;
+
+            } // end if
+
+            // if the passed heap has no root, it must not have any values
+            if (rideArray[1] == null) {
+                System.out.println("Unable to print the passed array! Root is null...");
+                return;
+
+            } // end if
+
             System.out.println("\nPrinting Ride array elements w/their ID and timestamp..\n");
             // iterates through each element in the array
             for (int i = 0; i < rideArray.length; i++) {

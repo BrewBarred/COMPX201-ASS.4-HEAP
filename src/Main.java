@@ -21,15 +21,11 @@ public class Main {
 
         //Ride[] rides = heap.sort(rideArray);
 
-        heap.insert(ride3);
-        heap.insert(ride1);
         heap.insert(ride2);
-        heap.insert(ride4);
+        heap.insert(ride3);
         heap.insert(ride6);
-        heap.insert(ride7);
-        printer.printTime(heap);
-        heap.sort();
-        //printer.printTime(heap.sort());
+        //heap.sort();
+        //printer.printTime(heap);
         //printer.printArray(heap);
 
     } // end main

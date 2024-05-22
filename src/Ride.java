@@ -3,7 +3,7 @@ import java.sql.Time;
 /**
  * Constructs a new Ride object used to store the information of each riders request in the ride-share app
  */
-public class Ride {
+public class Ride implements Comparable<Ride> {
     /**
      * The identification number of this ride request
      */
