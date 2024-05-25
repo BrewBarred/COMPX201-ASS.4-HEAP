@@ -8,17 +8,22 @@ Compile:
 Run:
 
     java -jar junit-platform-console-standalone-1.8.2.jar -cp .\ -c MinHeapTest
-	
 
-Included in this application is one additional field and 3 additional methods that should 
-not be included in the assessment.
 
-Additional Field:
 
-	- debugging: Enables debugging messages during testing when true, and disables them when false
+-- NOTES ABOUT THE IMPLEMENTATION --
 
-Additional Methods:
 
-	- push(String[] strArray): Takes an array of strings for ease when testing in my Main.java
-	- debug(String str): Used to provide informative debug messages while testing my code
-	- debug(): An easier way for me to print new lines during tests
+-> It was unclear if we should be ensuring any passed arrays (such as those passed to the insert/heapify methods), naturally I
+   would add code to ensure that the array either matches the maximum capacity or extend the passed array with null objects to meet
+   the capacity requirements, but I have not done this to minimize any (potentially) unnecessary code.
+
+-> For the heap sort method, I reversed the array after the sorting process has been completed, I'm not sure if this was necessary or not
+   but it seemed wrong sorting the heap into ascending order, as that would form a max heap as opposed to a min heap. I was also unsure
+   how to do this without another loop but I figured the complexity was not too bad since there is a maximum of 20 items in the heap and they are
+   partially sorted already.
+
+-> Since we weren't explicitly asked to use the comparable interface to compare location ID's or ride ID's I chose not to, but I have used the comparable interface
+   to compare rides by timestamps for downheaping etc., (as required)
+
+->

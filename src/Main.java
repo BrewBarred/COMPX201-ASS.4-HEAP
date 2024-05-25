@@ -26,21 +26,8 @@ public class Main {
         heap.insert(ride6);
         heap.sort();
 
-    } // end main
+        System.out.println("Has ride 2: " + heap.hasRide(ride2));
 
-    /**
-     * Clears the console with a label detailing the next process
-     * @param msg A String to show what process is about to occur
-     */
-    private static void clearConsole(String msg) {
-        for(int i = 0; i < 14; i++) {
-            if (i == 7)
-                System.out.println(msg);
-            else
-                System.out.println();
-
-        } // end for
-
-    } // end void
+    }
 
 } // end class
