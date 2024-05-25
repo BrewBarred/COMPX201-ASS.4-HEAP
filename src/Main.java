@@ -17,17 +17,12 @@ public class Main {
 
         Ride[] rideArray = {null, ride1, ride2, ride3, ride4, ride5, ride6, ride7};
 
-        //clearConsole("Attempting to Heapify...");
-
-        //Ride[] rides = heap.sort(rideArray);
-
         heap.insert(ride2);
         heap.insert(ride3);
         heap.insert(ride6);
         heap.sort();
 
-        System.out.println("Has ride 2: " + heap.hasRide(ride2));
-
+        HeapPrinter.printTime(heap);
     }
 
 } // end class

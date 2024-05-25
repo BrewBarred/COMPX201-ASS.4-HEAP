@@ -2,8 +2,6 @@
  * Creates a new dynamic replaceable minimum heap data structure that can store custom 'Ride' objects ordered by their scheduled timestamps
  */
 public class MinHeap {
-    // TEMP - used to print heap while testing
-    HeapPrinter printer = new HeapPrinter();
     /**
      * The array used to store each ride contained within this min heap
      */
@@ -171,7 +169,7 @@ public class MinHeap {
         int indexLast = getRideCount();
 
         // iterate through the heap to fetch the index of the passed 'Ride'
-        for (int i = 1; i <= indexLast; i++)
+        for(int i = 1; i <= indexLast; i++)
             // if the ride is found, returns its index
             if (rides[i] != null && rides[i].compareTo(r) == 0)
                 return i;
@@ -327,42 +325,37 @@ public class MinHeap {
         if (getRideCount() < 2)
             return rides;
 
-        // gets the index of the last ride in the heap
-        int indexLast = next - 1;
-        // remembers the next index pointers position for restoration later
+        // stores the value of the next index pointer for later restoration
         int next = this.next;
 
         // extracts elements from the heap one by one
-        for(int i = indexLast; i > 0; i--) {
-            //test
-            System.out.println("Before swap...");
-            printer.printTime(rides, i, 1);
-
+        for(int i = next - 1; i > 0; i--) {
             // swap the root element with the last element
             swap(i, 1);
             //ridesSorted[indexLast - i + 1] = ride;
-            next--;
+            this.next--;
             // heapify the unsorted array and repeat until all items are sorted, reducing size of heap each time using 'i'
             heapify(i, rides);
         }
 
+        HeapPrinter print = new HeapPrinter();
+        print.printTime(rides);
         // reverse the array since the sort method leaves it backwards
         reverseHeap();
-        // test
-        printer.printTime(rides);
-
         // restores the next index pointers position
         this.next = next;
+        print.printTime(rides);
         return rides;
     }
 
     /**
-     * Swaps the elements at index1 and index2 with each other in the passed ride array
+     * Swaps the elements at index1 and index2 with each other
      * @param index1 The index of the element being swapped with that at index2
      * @param index2 The index of the element being swapped with that at index1
      */
     private void swap(int index1, int index2) {
-        if (Math.max(index1, index2) >= rides.length) {
+        // validates the passed indices
+        if (isValidIndexes(index1, index2)) {
             debug(String.format("Unable to swap values! Index was out of bounds... Index1 = %d, Index2 = %d, RideArray Length = %d", index1, index2, rides.length), "swap");
             return;
         }
@@ -379,7 +372,6 @@ public class MinHeap {
         Ride tempChild = child;
         rides[index1] = parent;
         rides[index2] = tempChild;
-
     }
 
     /**
@@ -409,17 +401,15 @@ public class MinHeap {
         int indexLastRide = getRideCount();
 
         // validate the passed indices to prevent out of bounds exception
-        if (Math.max(index1, index2) > indexLastRide || Math.min(index1, index2) < 0) {
+        if (Math.max(index1, index2) > indexLastRide || Math.min(index1, index2) < 0)
             return false;
-        }
 
         // fetches the ride objects being compared
         Ride ride1 = rides[index1];
         Ride ride2 = rides[index2];
 
         return ride1.compareTo(ride2) == -1;
-
-    } // end bool
+    }
 
     /**
      * Converts the passed 0-based ride array into a 1-based ride array
@@ -446,17 +436,11 @@ public class MinHeap {
         while (left < right) {
             // temporarily store the ride at the index of the left pointer
             Ride temp = rides[left];
-            // swap the rides at both pointers with each other
-            rides[left] = rides[right];
-            rides[right] = temp;
-
-            // move pointers inward
-            left++;
-            right--;
-
-        } // end while
-
-    } // end void
+            // swap the rides at both pointers with each other and moves pointers inward
+            rides[left++] = rides[right];
+            rides[right--] = temp;
+        }
+    }
 
     /**
      * ~ FOR DEVELOPER USE ONLY ~<br><br>
@@ -468,7 +452,6 @@ public class MinHeap {
     private void debug(String msg, String function) {
         if (DEBUGGING)
             System.out.println(String.format("[%s] %s", function.toUpperCase(), msg));
-
-    } // end void
+    }
 
 } // end class
