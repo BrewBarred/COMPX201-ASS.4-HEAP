@@ -15,7 +15,7 @@ public class Main {
         Ride ride6 = new Ride(1, Time.valueOf("1:1:1"), "Test 16, Test 17, Test 18", 0, 89);
         Ride ride7 = new Ride(99, Time.valueOf("7:7:7"), "Test 19", 14, 92);
 
-        Ride[] rideArray = {ride1, ride2, ride3, ride4, ride5, ride6, ride7};
+        Ride[] rideArray = {null, ride1, ride2, ride3, ride4, ride5, ride6, ride7};
 
         //clearConsole("Attempting to Heapify...");
 
@@ -24,9 +24,7 @@ public class Main {
         heap.insert(ride2);
         heap.insert(ride3);
         heap.insert(ride6);
-        //heap.sort();
-        //printer.printTime(heap);
-        //printer.printArray(heap);
+        heap.sort();
 
     } // end main
 

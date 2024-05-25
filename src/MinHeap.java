@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 /**
  * Creates a new dynamic replaceable minimum heap data structure which stores custom 'Ride' objects ordered by their scheduled timestamps
  */
@@ -46,10 +44,8 @@ public class MinHeap {
      */
     public void insert(Ride[] rideArray) {
         // loops through the passed array and inserts any rides that are contained
-        for (Ride ride : rideArray) {
+        for (Ride ride : rideArray)
             insert(ride);
-
-        } // end for
 
     } // end void
 
@@ -59,7 +55,6 @@ public class MinHeap {
      */
     public void insert(Ride r) {
         if (r == null) {
-            System.out.println("R is null: " + r == null);
             return;
 
         } // end if
@@ -303,7 +298,7 @@ public class MinHeap {
             int indexRightChild = indexLeftChild + 1;
             debug(String.format("Next: %d, IndexParent: %d, IndexLeftChild: %d, IndexRightChild: %d", next, indexParent, indexLeftChild, indexRightChild), "downheap");
 
-            if (!isValidIndices(indexLeftChild, indexRightChild, rideArray)) {
+            if (!isValidIndexes(indexLeftChild, indexRightChild, rideArray)) {
                 debug(String.format("Invalid indices passed! One or more indices were out of the bounds of the array... IndexLeft = %d, IndexRight = %d, ArrayLength = %d", indexLeftChild, indexRightChild, rideArray.length), "downheap");
                 break;
 
@@ -315,6 +310,10 @@ public class MinHeap {
 
             // fetches the index of the child with the smallest timestamp
             indexSmallest = getSmaller(indexLeftChild, indexRightChild, rideArray);
+            // check that the smallest value is within the bounds of the array
+            if (indexSmallest >= next)
+                // if the index of the smallest value is not included in the current array count, do not proceed
+                return;
 
             // if the parent value is not the smallest, swap and continue, else break the loop
             if (isSmaller(indexSmallest, indexParent, rideArray)) {
@@ -332,25 +331,25 @@ public class MinHeap {
     } // end void
 
     /**
-     * Checks if the passed index is within the bounds of the passed array
-     * @param index The index being checked in the passed ride array
-     * @param rideArray The ride array being used to validate bounds
-     * @return A boolean value that is true if the passed index within the bounds of the passed ride array
-     */
-    private boolean isValidIndex(int index, Ride[] rideArray) {
-        return index < rideArray.length && index > 0;
-
-    } // end void
-
-    /**
      * Checks if the passed indices are both within the bounds of the passed array
      * @param index1 The first index being checked in the passed ride array
      * @param index2 The second index being checked in the passed ride array
      * @param rideArray The ride array being used to validate bounds
      * @return A boolean value that is true if the passed indices are both within the bounds of the passed ride array
      */
-    private boolean isValidIndices(int index1, int index2, Ride[] rideArray) {
+    private boolean isValidIndexes(int index1, int index2, Ride[] rideArray) {
         return isValidIndex(index1, rideArray) && isValidIndex(index2, rideArray);
+
+    } // end void
+
+    /**
+     * Checks if the passed index is within the bounds of the passed array
+     * @param index The index being checked in the passed ride array
+     * @param rideArray The ride array being used to validate bounds
+     * @return A boolean value that is true if the passed index within the bounds of the passed ride array
+     */
+    private boolean isValidIndex(int index, Ride[] rideArray) {
+        return index < next && index > 0;
 
     } // end void
 
@@ -421,14 +420,9 @@ public class MinHeap {
      * @return A ride array ordered by timestamps
      */
     public Ride[] sort() {
-        if (getRideCount(rides) < 2) {
-            System.out.println("Count = " + getRideCount(rides));
+        // if the array has 0 or 1 ride, return the passed array as it is already sorted
+        if (getRideCount(rides) < 2)
             return rides;
-
-        } // end if
-
-        // builds a min heap from the passed array
-        Ride[] ridesSorted = new Ride[MAX_CAPACITY];
 
         // gets the index of the last ride in the heap
         int indexLast = next - 1;
@@ -441,25 +435,17 @@ public class MinHeap {
 
             // swap the root element with the last element
             swap(i, 1, rides);
-
-            //System.out.println("RideArray: " + rideArray[indexLast - i + 1].getTime() + ", RidesToSortArray: " + ridesToSort[i].time + ", Index1: " + i + " Index2: " + (indexLast - i + 1));
-            // override each element of the default heap with
-            Ride ride = remove(rides[i]);
-            System.out.println(ride);
-            ridesSorted[indexLast - i + 1] = ride;
-            //System.out.println("indexRidesSorted: " + (indexLast - i + 1) + " indexRidesToSort: " + i);
-
+            //ridesSorted[indexLast - i + 1] = ride;
+            next--;
             // heapify the unsorted array and repeat until all items are sorted, reducing size of heap each time using 'i'
-            ridesSorted = heapify(i, ridesSorted);
-            System.out.println("RIDES LENGTH " + getRideCount(ridesSorted) + " index added at: " + (indexLast - i + 1));
+            heapify(i, rides);
 
         } // end for
 
-        //test
-        System.out.println("After sort...");
-        printer.printArray(ridesSorted);
-        // updates the default heap to match the newly sorted array
-        rides = ridesSorted;
+        // reverse the array since the sort method leaves it backwards
+        reverseHeap();
+        printer.printTime(rides);
+
         next = getNext(rides);
 
         return rides;
@@ -487,10 +473,6 @@ public class MinHeap {
         Ride child = rideArray[index1];
         Ride parent = rideArray[index2];
 
-        // test
-        System.out.println(String.format("Swapping values at index %d and %d", index1, index2));
-        //printer.printTime(rideArray, index1, index2);
-
         // swaps child with parent
         Ride tempChild = child;
         rideArray[index1] = parent;
@@ -514,7 +496,6 @@ public class MinHeap {
             return -1;
         return isSmaller(index1, index2, rideArray) ? index1 : index2;
 
-
     } // end bool
 
     /**
@@ -525,8 +506,10 @@ public class MinHeap {
      * @return A boolean value that is true if the timestamp at index1 is smaller than that at index2, else returns false.
      */
     private boolean isSmaller(int index1, int index2, Ride[] rideArray) {
+        // get the total ride count
         int indexLastRide = getRideCount(rideArray);
 
+        // validate the passed indices to prevent out of bounds exception
         if (Math.max(index1, index2) > indexLastRide || Math.min(index1, index2) < 0) {
             debug(String.format("Unable to compare timestamps! Index out of bounds error: " +
                     "Index1 = %d, Index2 = %d, IndexLastRide = %d", index1, index2, indexLastRide), "isSmaller");
@@ -543,36 +526,28 @@ public class MinHeap {
     } // end bool
 
     /**
-     * Uses the java comparable to compare two ride arrays against each other to see if they are the same
-     * @param rides1 The first ride array to compare
-     * @param rides2 The second ride array to compare
-     * @return A boolean value that is true if the passed arrays match in length
-     * and contain the same elements at the same indices, else returns false
+     * Reverses the current order of the default heap, intended for use after heap sort as the array will be in ascending order
      */
-    private boolean isEqual(Ride[] rides1, Ride[] rides2) {
-        // arrays of different lengths cannot be equal - return false
-        if (rides1.length != rides2.length)
-            return false;
-        // arrays with the same length and no rides must be identical - return true
-        if (rides1.length == 0)
-            return true;
+    private void reverseHeap() {
+        // sets pointers to the first and last ride in the heap
+        int left = 1;
+        int right = getRideCount(rides);
 
-        // each element in both arrays
-        for(int i = 1; i < rides1.length; i++) {
-            // if we hit null values in both lists at the same time, lists are equal
-            if (rides1[i] == null || rides2[i] == null)
-                // returns true if both elements are null, else returns false
-                return rides1[i] == rides2[i];
+        // while the pointers have not met or passed each other
+        while (left < right) {
+            // temporarily store the ride at the index of the left pointer
+            Ride temp = rides[left];
+            // swap the rides at both pointers with each other
+            rides[left] = rides[right];
+            rides[right] = temp;
 
-            // if the elements at index 'i' don't match - return false
-            if (rides1[i].compareTo(rides2[i]) != 0)
-                return false;
+            // move pointers inward
+            left++;
+            right--;
 
-        } // end for
+        } // end while
 
-       return true;
-
-    } // end bool
+    } // end void
 
     /**
      * ~ FOR DEVELOPER USE ONLY ~<br><br>
