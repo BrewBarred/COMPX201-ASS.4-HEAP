@@ -1,9 +1,21 @@
+import java.awt.*;
 import java.sql.Time;
+import java.util.Arrays;
 
 /**
  * Constructs a new Ride object used to store the information of each riders request in the ride-share app
  */
 public class Ride implements Comparable<Ride> {
+    /**
+     * ~ FOR DEVELOPER USE ONLY! ~<br><br>
+     *
+     * True if debugging mode should be enabled, else false
+     */
+    private final boolean DEBUGGING = true;
+    /**
+     * The maximum number of passengers per vehicle
+     */
+    private final int MAX_PASSENGERS = 6;
     /**
      * The identification number of this ride request
      */
@@ -17,7 +29,7 @@ public class Ride implements Comparable<Ride> {
      * @Note: Each passenger must be separated using a "," and
      * whitespaces on either side of the comma will be trimmed
      */
-    public String passengers;
+    public String[] passengers = new String[MAX_PASSENGERS];
     /**
      * The start location ID
      */
@@ -27,33 +39,45 @@ public class Ride implements Comparable<Ride> {
      */
     public int endId;
     /**
-     * ~ FOR DEVELOPER USE ONLY! ~<br><br>
-     *
-     * True if debugging mode should be enabled, else false
+     * The total number of passengers in this ride and also acts as a pointer to the next index in the passenger list
      */
-    private final boolean DEBUGGING = true;
+    private int pCount = 0;
 
     /**
      * Constructs a new Ride object to store the information of a ride request
      * @param id The identification number of this ride request
      * @param time The timestamp of this ride request in 24-hour time format (i.e., 00:00:00 -> 23:59:59)
-     * @param passengers The name of each passenger in this ride request<br><br>
-     *
-     * Note: Each passenger must be separated using a "," and any
-     * whitespace on either side of the comma will be trimmed<br>
-     *
+     * @param passenger The name of the passenger in this ride request
      * @param startId The start location ID
      * @param endId The end location ID
      */
-    public Ride(int id, Time time, String passengers, int startId, int endId) {
-        //NOTE: Validate parameters - Negative numbers, and valid string for time (split by : and ensure length is 3 with numbers only)
+    public Ride(int id, Time time, String passenger, int startId, int endId) {
+        // initializes this ride, converting the passed string into an array
+        init(id, time, new String[]{passenger}, startId, endId);
+    }
+
+    /**
+     * Constructs a new Ride object to store the information of a ride request
+     * @param id The identification number of this ride request
+     * @param time The timestamp of this ride request in 24-hour time format (i.e., 00:00:00 -> 23:59:59)
+     * @param passengers An array containing the names of the passengers in this ride request
+     * @param startId The start location ID
+     * @param endId The end location ID
+     */
+    public Ride(int id, Time time, String[] passengers, int startId, int endId) {
+        // initializes this ride
+        init(id, time, passengers, startId, endId);
+    }
+
+    private void init(int id, Time time, String[] passengers, int startId, int endId) {
+        if (passengers.length > MAX_PASSENGERS)
+            return;
         this.id = id;
         this.time = time;
-        this.passengers = fPassengers(passengers);
-        this.startId = startId;
-        this.endId = endId;
-
-    } // end constructor
+        this.passengers = Arrays.copyOf(passengers, MAX_PASSENGERS);
+        this.startId = startId > 0 ? startId : 0;
+        this.endId = endId > 0 ? endId : 0;
+    }
 
     /**
      * Converts and returns this rides timestamp as a String
@@ -61,8 +85,7 @@ public class Ride implements Comparable<Ride> {
      */
     public String getTime() {
         return time.toString();
-
-    } // end string
+    }
 
     /**
      * Overrides the default java String.toString() method to return the information of this ride request.
@@ -74,10 +97,9 @@ public class Ride implements Comparable<Ride> {
                 String.format("Time: %tT\n", time) +
                 String.format("Start ID: %d\n", startId) +
                 String.format("End ID: %d\n", endId) +
-                "Passengers:\n" + passengers +
+                "Passengers:\n" + fPassengers() +
                 "--------------------";
-
-    } // end String override
+    }
 
     /**
      * Compares the extended ride (ride1) against the passed ride (ride2) by their timestamps
@@ -88,75 +110,88 @@ public class Ride implements Comparable<Ride> {
      */
     public int compareTo(Ride ride2) {
         return time.compareTo(ride2.time);
-
-    } // end int
-
-//    /**
-//     * Ensures the passed 'Time' is a valid 24-hour time format
-//     * @param time The 'Time' value to check
-//     * @return The passed time if it is valid, else returns null
-//     */
-//    private Time checkTime(Time time) {
-//            debug("Validating time: " + time);
-//
-//            if (!isValidTime(time)) {
-//                debug("Invalid time \"" + time + "\" value passed! Please ensure time is between 00:00:00 inclusive and 24:00:00 exclusive...");
-//                return null;
-//
-//            } // end if
-//
-//            return time;
-//
-//    } // end time
-//
-//    /**
-//     * Ensures the passed 'Time' is a valid 24-hour time format
-//     * @param time The 'Time' value to check
-//     * @return True if the passed time is valid, else returns false
-//     */
-//    private boolean isValidTime(Time time) {
-//        // split passed time into a string array
-//        String[] splitTime = time.toString().split(":");
-//        int hour = Integer.parseInt(splitTime[0]);
-//        int mins = Integer.parseInt(splitTime[1]);
-//        int secs = Integer.parseInt(splitTime[2]);
-//
-//        // ensure each time component is valid
-//        boolean validHour = hour >= 0 && hour < 24;
-//        boolean validMins = mins >= 0 && mins < 60;
-//        boolean validSecs = secs >= 0 && secs < 60;
-//
-//        // return true if all time components are valid
-//        return validHour && validMins && validSecs;
-//
-//    } // end time
+    }
 
     /**
-     * Formats the passed passenger string ready for display
-     * @param passengers A string value representing each passenger in this ride request with each passenger after the first separated by a comma
+     * Adds the passed passengers to this rides passenger list
+     * @param passengers The names of the passengers being added to this ride
+     * @return A boolean value that is true if the passengers are successfully added to this ride, else returns false
+     */
+    public boolean addPassenger(String[] passengers) {
+        // if string is null or empty, do not add a passenger
+        if (passengers == null || passengers.length == 0)
+            return false;
+
+        // temporarily stores the current passenger list in case of any processing errors
+        String[] temp = this.passengers;
+
+        // iterates through the passed array adding each passenger
+        for (String p : passengers) {
+            if (p == null)
+                continue;
+            // if any processing errors occur
+            if (!addPassenger(p)) {
+                // restores original passengers and returns false
+                this.passengers = temp;
+                System.out.println("returning false");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Adds the passed passenger to this rides passenger list
+     * @param passenger The name of the passenger being added to this ride
+     * @return A boolean value that is true if the passenger is successfully added to this ride, else returns false
+     */
+    public boolean addPassenger(String passenger) {
+        // if string is null or empty, do not add a passenger
+        if (passenger == null || passenger.trim().length() == 0)
+            return false;
+
+        // trims white space from the passed string
+        passenger = passenger.trim();
+
+        // if the passenger list is at, or will exceed max capacity, do not proceed
+        if (pCount >= MAX_PASSENGERS) {
+            System.out.println(String.format("Unable to add passengers to ride! Insufficient ride capacity... pCount: %d, passengers.length: %d, Max passengers: %d", pCount, passengers.length, MAX_PASSENGERS));
+            return false;
+        }
+
+        if (passenger.contains(",")) {
+            System.out.println("Unable to add multiple passengers! Please use: addPassenger(String[]) instead...");
+            return false;
+        }
+
+        // adds the passed passenger to this rides passenger list
+        passengers[pCount++] = passenger;
+        debug("Successfully added passenger \"" + passenger + "\". RideId: " + id);
+        return true;
+    }
+
+    /**
+     * Formats the passenger array ready for printing
      * @return A string value representing each passenger in this ride request on a new line
      */
-    private String fPassengers(String passengers) {
-        // splits each passenger by comma
-        String[] passengerArray = passengers.split(",");
+    private String fPassengers() {
         // creates a string builder object for efficient string concatenation
         StringBuilder fPassengers = new StringBuilder();
 
         // checks if there is at least one valid passenger in the array before iterating
-        if (passengerArray.length > 0 && !passengers.trim().isEmpty()) {
+        if (passengers.length > 0) {
             // iterates through the array of passengers
-            for (String passenger : passengerArray)
-                fPassengers.append(passenger.trim()).append("\n");
+            for (String passenger : passengers)
+                if (passenger != null)
+                    fPassengers.append(passenger.trim()).append("\n");
 
             return fPassengers.toString();
-
-        }// end if
+        }
 
         // displays error message if no valid passengers were found
-        debug("Error! Failed to format passengers, and invalid passenger string was passed!");
-        return null + "\n";
-
-    } // end String
+        debug("Error! Failed to format passengers, an invalid passenger string was passed!");
+        return null;
+    }
 
     /**
      * ~ FOR DEVELOPER USE ONLY ~<br><br>
@@ -168,7 +203,6 @@ public class Ride implements Comparable<Ride> {
         // if debugging mode has been enabled
         if (DEBUGGING)
             System.out.println("[DEBUG] " + msg);
-
-    } // end debug
+    }
 
 } // end class

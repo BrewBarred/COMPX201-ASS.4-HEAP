@@ -26,4 +26,5 @@ Run:
 -> Since we weren't explicitly asked to use the comparable interface to compare location ID's or ride ID's I chose not to, but I have used the comparable interface
    to compare rides by timestamps for downheaping etc., (as required)
 
-->
+-> I didn't like the way you have to pass a Date to the Ride class so I intentionally stuck to the first assignment sheet for this and used java.sql.Time class instead,
+   this way, the time is a lot easier to pass through the constructor and don't have the added hassle of including/excluding a date in its input/output.

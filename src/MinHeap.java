@@ -1,3 +1,7 @@
+import java.awt.*;
+import java.time.Duration;
+import java.time.LocalTime;
+
 /**
  * Creates a new dynamic replaceable minimum heap data structure that can store custom 'Ride' objects ordered by their scheduled timestamps
  */
@@ -11,13 +15,9 @@ public class MinHeap {
      */
     public int next;
     /**
-     * The number of vehicles (rides) that the company has available (i.e., the size of the heap, this is set to 21 to allow for 20 rides, since )
+     * The number of vehicles (rides) that the company has available (i.e., the size of the heap, this is set to 21 to allow for 20 rides, since index 0 is not used
      */
     public final int MAX_CAPACITY = 21;
-    /**
-     * The maximum number of passengers per vehicle
-     */
-    private final int MAX_PASSENGERS = 6;
     /**
      * ~ FOR DEVELOPER USE ONLY! ~ <br><br>
      *
@@ -33,7 +33,6 @@ public class MinHeap {
         rides = new Ride[MAX_CAPACITY];
         // points to the first available slot in the heap
         next = 1;
-
     }
 
     /**
@@ -43,10 +42,13 @@ public class MinHeap {
      */
     public boolean insert(Ride[] rideArray) {
         // loops through the passed array and inserts any rides that it contains
-        for (Ride ride : rideArray)
+        for (Ride ride : rideArray) {
             // if this ride is successfully inserted
-            if (!insert(ride));
+            if (!insert(ride))
                 return false;
+        }
+
+        return true;
     }
 
     /**
@@ -59,26 +61,87 @@ public class MinHeap {
             return false;
 
         // if maximum capacity has been reached, the passed ride cannot be added
-        if (next >= rides.length) {
-            debug(String.format("Unable to insert the passed ride! Maximum ride limit has been reached... Ride ID: %d, Ride Time: %s, Max Capacity: %d", r.id, r.getTime(), MAX_CAPACITY), "insert");
+        if (next >= MAX_CAPACITY) {
+            debug("Unable to insert the passed ride! Maximum ride limit has been reached...", "insert");
             return false;
         }
 
         // prevents duplicate rides being added to the heap
-        if (hasRide(r)) {
-            debug(String.format("Unable to insert ride! Ride was already contained in the array... Ride ID: %d, Ride Time: %s", r.id, r.getTime()), "insert");
+        if (hasRide(r) || !isUniqueId(r)) {
+            debug("Unable to insert ride! Ride was already contained in the array...", "insert");
             return false;
         }
 
         debug("Attempting to insert ride... \n " + r, "insert");
+
+        // if this ride in not optimizable, add it to the array
+        if (isOptimizable(r)) {
+            upHeap();
+            return true;
+        }
+
         // sets the next spare slot in the heap to the passed 'Ride' object
         rides[next] = r;
         // up-heaps to restore heap order
         upHeap();
-        // increment the next index pointer
+        // increments the next index pointer
         next++;
-
         return true;
+    }
+
+    /**
+     * Optimizes the passed ride by merging it with any rides with the same location ID that are within 10 minutes of this rides timestamp (if possible)
+     * @param r The ride being checked for optimization capability
+     * @return A boolean value that is true if the ride was successfully optimized,
+     */
+    private boolean isOptimizable(Ride r) {
+        debug("Attempting to optimize...", "isOptimizable");
+        // for each ride in the array, compare location id's
+        for(Ride ride : rides) {
+            // if the ride is null, there must be no rides left to check
+            if (ride == null)
+                continue;
+
+            System.out.println("Ride is not null");
+
+            // if this ride is not booked within 10 minutes of the passed right, check next ride
+            if (getTimeDiff(r, ride) > 10)
+                continue;
+
+            System.out.println("Time is equal");
+            System.out.println(String.format("RideStart: %d, RideEnd: %d, RideId: %d, RideTime: %s, rStart: %d, rEnd %d, rId: %d, rTime: %s", ride.startId, ride.endId, ride.id, ride.getTime(), r.startId, r.endId, r.id, r.getTime()));
+            // if this rides location doesn't match the new rides location, check next ride
+            if (ride.startId == r.startId && ride.endId == r.endId) {
+                System.out.println("Location is equal");
+
+                // updates this rides time to the later time
+                ride.time = r.compareTo(ride) < 0 ? ride.time : r.time;
+                boolean test = ride.addPassenger(r.passengers);
+                System.out.println(test);
+                // try merge passengers, if this doesn't work, this will return false
+                return test;
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * Calculates the difference in time between the timestamps of the passed rides
+     * @param ride1 The ride object being compared against ride2
+     * @param ride2 The ride object being compared against ride1
+     * @return An integer value denoting the time difference in minutes
+     */
+    public int getTimeDiff(Ride ride1, Ride ride2) {
+        // stores the two timestamps for simpler comparison
+        LocalTime time1 = ride1.time.toLocalTime();
+        LocalTime time2 = ride2.time.toLocalTime();
+
+        // calculates the minutes in between
+        Duration timeDiff = Duration.between(time1, time2);
+        int minDiff = Math.abs((int) timeDiff.toMinutes());
+
+        return minDiff;
     }
 
     /**
@@ -140,6 +203,12 @@ public class MinHeap {
         return rides[1];
     }
 
+    public void dump() {
+        for (Ride ride : rides)
+            if (ride != null)
+                System.out.println(ride);
+    }
+
     /**
      * Iterates through the passed ride array to return the number of rides in it
      * @return An integer value denoting the number of rides in the passed array or -1 if the heap is null
@@ -187,16 +256,38 @@ public class MinHeap {
         if (isEmpty())
             return false;
 
-        // sets pointers to the first and last rides in the heap
-        int pointerLeft = 1;
-        int pointerRight = getRideCount();
+        // sets pointers at each end of the heap
+        int left = 1;
+        int right = getRideCount();
 
         // moves pointers inward until they intersect, returning true if the passed ride is found by either pointer
-        for (; pointerLeft < pointerRight; pointerLeft++, pointerRight--)
-            if (rides[pointerLeft] == r || r == rides[pointerRight])
+        for (; left < right; left++, right--)
+            if (rides[left] == r || r == rides[right])
                 return true;
 
         return false;
+    }
+
+    /**
+     * Iterates through the heap to ensure that the passed ride has a unique ID
+     * @param r The ride being compared
+     * @return A boolean value that is true if the passed ride has a unique ID, else returns false
+     */
+    private boolean isUniqueId(Ride r) {
+        // if the heap is empty, the passed id must be unique
+        if (isEmpty())
+            return true;
+
+        // sets pointers at each end of the heap
+        int left = 1;
+        int right = getRideCount();
+
+        // moves pointers inward until they intersect, returning true if the passed ride is found by either pointer
+        for (; left < right; left++, right--)
+            if (rides[left].id == r.id || r.id == rides[right].id)
+                return false;
+
+        return true;
     }
 
     /**
@@ -273,7 +364,7 @@ public class MinHeap {
      * @return A boolean value that is true if the passed index is within the bounds of the heap
      */
     private boolean isValidIndex(int index) {
-        return index < next && index > 0;
+        return index <= getRideCount() && index > 0;
     }
 
     /**
@@ -304,14 +395,12 @@ public class MinHeap {
             convertTo1Based(rideArray);
 
         int indexParent = rideNum / 2;
-
         // starting at least non-leaf node, down-heap each root
         for (int i = indexParent; i > 0; i--)
             downHeap(i);
 
         // overwrites the heap array with this new, heapified array
         rides = rideArray;
-
         // overrides the heap with the new heapified array
         return rideArray;
     }
@@ -327,9 +416,11 @@ public class MinHeap {
 
         // stores the value of the next index pointer for later restoration
         int next = this.next;
+        // stores the index of the last ride
+        int indexLast = next - 1;
 
         // extracts elements from the heap one by one
-        for(int i = next - 1; i > 0; i--) {
+        for(int i = indexLast; i > 0; i--) {
             // swap the root element with the last element
             swap(i, 1);
             //ridesSorted[indexLast - i + 1] = ride;
@@ -338,13 +429,10 @@ public class MinHeap {
             heapify(i, rides);
         }
 
-        HeapPrinter print = new HeapPrinter();
-        print.printTime(rides);
         // reverse the array since the sort method leaves it backwards
         reverseHeap();
         // restores the next index pointers position
         this.next = next;
-        print.printTime(rides);
         return rides;
     }
 
@@ -355,7 +443,7 @@ public class MinHeap {
      */
     private void swap(int index1, int index2) {
         // validates the passed indices
-        if (isValidIndexes(index1, index2)) {
+        if (!isValidIndexes(index1, index2)) {
             debug(String.format("Unable to swap values! Index was out of bounds... Index1 = %d, Index2 = %d, RideArray Length = %d", index1, index2, rides.length), "swap");
             return;
         }
