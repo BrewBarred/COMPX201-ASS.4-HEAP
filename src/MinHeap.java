@@ -77,6 +77,9 @@ public class MinHeap {
         // if this ride in not optimizable, add it to the array
         if (isOptimizable(r)) {
             upHeap();
+            // test
+            for (String passenger : r.passengers)
+                System.out.println(passenger);
             return true;
         }
 
@@ -116,10 +119,8 @@ public class MinHeap {
 
                 // updates this rides time to the later time
                 ride.time = r.compareTo(ride) < 0 ? ride.time : r.time;
-                boolean test = ride.addPassenger(r.passengers);
-                System.out.println(test);
                 // try merge passengers, if this doesn't work, this will return false
-                return test;
+                return ride.addPassenger(r.passengers);
             }
 
         }

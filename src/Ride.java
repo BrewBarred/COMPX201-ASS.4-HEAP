@@ -74,7 +74,8 @@ public class Ride implements Comparable<Ride> {
             return;
         this.id = id;
         this.time = time;
-        this.passengers = Arrays.copyOf(passengers, MAX_PASSENGERS);
+        // add each passenger individually to ensure passenger count is taken
+        addPassenger(passengers);
         this.startId = startId > 0 ? startId : 0;
         this.endId = endId > 0 ? endId : 0;
     }
