@@ -77,9 +77,6 @@ public class MinHeap {
         // if this ride in not optimizable, add it to the array
         if (isOptimizable(r)) {
             upHeap();
-            // test
-            for (String passenger : r.passengers)
-                System.out.println(passenger);
             return true;
         }
 
@@ -284,7 +281,7 @@ public class MinHeap {
         int right = getRideCount();
 
         // moves pointers inward until they intersect, returning true if the passed ride is found by either pointer
-        for (; left < right; left++, right--)
+        for (; left <= right; left++, right--)
             if (rides[left].id == r.id || r.id == rides[right].id)
                 return false;
 

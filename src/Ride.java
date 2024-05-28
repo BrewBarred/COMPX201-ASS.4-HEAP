@@ -52,8 +52,11 @@ public class Ride implements Comparable<Ride> {
      * @param endId The end location ID
      */
     public Ride(int id, Time time, String passenger, int startId, int endId) {
-        // initializes this ride, converting the passed string into an array
-        init(id, time, new String[]{passenger}, startId, endId);
+        // initializes this ride if the passed passenger name is not null and not an empty string
+        if (passenger != null || passenger.trim().length() != 0)
+            init(id, time, new String[]{passenger}, startId, endId);
+        else
+            System.out.println("Unable to create ride! Passenger was invalid...");
     }
 
     /**
@@ -65,19 +68,21 @@ public class Ride implements Comparable<Ride> {
      * @param endId The end location ID
      */
     public Ride(int id, Time time, String[] passengers, int startId, int endId) {
-        // initializes this ride
-        init(id, time, passengers, startId, endId);
+        // initialize this ride if there is at least one and no more than the maximum number of passengers
+        if (!(passengers.length < 1 || passengers.length > MAX_PASSENGERS))
+            init(id, time, passengers, startId, endId);
+        else
+            System.out.println("Unable to create ride! One or more passengers were invalid...");
     }
 
     private void init(int id, Time time, String[] passengers, int startId, int endId) {
-        if (passengers.length > MAX_PASSENGERS)
-            return;
         this.id = id;
         this.time = time;
         // add each passenger individually to ensure passenger count is taken
         addPassenger(passengers);
-        this.startId = startId > 0 ? startId : 0;
-        this.endId = endId > 0 ? endId : 0;
+        // ensures start and end i.d's are greater than or equal to 1
+        this.startId = startId > 0 ? startId : 1;
+        this.endId = endId > 0 ? endId : 1;
     }
 
     /**
@@ -167,7 +172,7 @@ public class Ride implements Comparable<Ride> {
 
         // adds the passed passenger to this rides passenger list
         passengers[pCount++] = passenger;
-        debug("Successfully added passenger \"" + passenger + "\". RideId: " + id);
+        debug("Successfully added passenger \"" + passenger + "\". RideId: " + id, "addPassenger");
         return true;
     }
 
@@ -190,20 +195,24 @@ public class Ride implements Comparable<Ride> {
         }
 
         // displays error message if no valid passengers were found
-        debug("Error! Failed to format passengers, an invalid passenger string was passed!");
+        debug("Error! Failed to format passengers, an invalid passenger string was passed!", "fPassengers");
         return null;
     }
 
     /**
      * ~ FOR DEVELOPER USE ONLY ~<br><br>
      *
-     * Writes debug messages to the console if debugging mode is enabled
-     * @param msg The debug message to print to the console
+     * Prints debug messages to console if debugging mode is enabled
+     * @param msg The debug message to be printed to the console
+     * @param function The name of the function in which the debugging message is executed
+     *
+     * Prints debug messages to console if debugging mode is enabled
+     * @param msg The debug message to be printed to the console
+     * @param function The name of the function in which the debugging message is executed
      */
-    private void debug(String msg) {
-        // if debugging mode has been enabled
+    private void debug(String msg, String function) {
         if (DEBUGGING)
-            System.out.println("[DEBUG] " + msg);
+            System.out.println(String.format("[Ride : %s] %s", function.toUpperCase(), msg));
     }
 
 } // end class
