@@ -22,7 +22,7 @@ public class MinHeap {
      *
      * True if debugging mode should be enabled, else false
      */
-    private final boolean DEBUGGING = true;
+    private final boolean DEBUGGING = false;
 
     /**
      * Constructs a new minimum heap object and points to the first ride slot by default

@@ -11,7 +11,7 @@ public class Ride implements Comparable<Ride> {
      *
      * True if debugging mode should be enabled, else false
      */
-    private final boolean DEBUGGING = true;
+    private final boolean DEBUGGING = false;
     /**
      * The maximum number of passengers per vehicle
      */
