@@ -80,7 +80,7 @@ public class Ride implements Comparable<Ride> {
         this.time = time;
         // add each passenger individually to ensure passenger count is taken
         addPassenger(passengers);
-        // ensures start and end i.d's are greater than or equal to 1
+        // ensures location i.d's are greater than or equal to 1
         this.startId = startId > 0 ? startId : 1;
         this.endId = endId > 0 ? endId : 1;
     }
@@ -139,7 +139,6 @@ public class Ride implements Comparable<Ride> {
             if (!addPassenger(p)) {
                 // restores original passengers and returns false
                 this.passengers = temp;
-                System.out.println("returning false");
                 return false;
             }
         }
@@ -166,7 +165,7 @@ public class Ride implements Comparable<Ride> {
         }
 
         if (passenger.contains(",")) {
-            System.out.println("Unable to add multiple passengers! Please use: addPassenger(String[]) instead...");
+            System.out.println("Unable to add multiple passengers! Please use: addPassenger(String[]) function instead...");
             return false;
         }
 

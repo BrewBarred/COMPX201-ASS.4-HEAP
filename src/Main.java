@@ -6,9 +6,9 @@ public class Main {
         MinHeap heap = new MinHeap();
         HeapPrinter printer = new HeapPrinter();
 
+        Ride ride10 = new Ride(44, Time.valueOf("08:05:00"), new String[] {"pass3"}, 420, 6969);
         Ride ride1 = new Ride(45, Time.valueOf("08:00:00"), new String[] {"pass1"}, 420, 6969);
-        Ride ride9 = new Ride(45, Time.valueOf("08:00:02"), "pass2", 420, 6969);
-        Ride ride10 = new Ride(45, Time.valueOf("08:05:00"), new String[] {"pass3"}, 420, 6969);
+        Ride ride9 = new Ride(42, Time.valueOf("08:00:02"), "pass2", 420, 6969);
         Ride ride2 = new Ride(32, Time.valueOf("2:2:2"), new String[] {"Test 4", "Test 5", "Test 6"}, 69, 70);
         Ride ride3 = new Ride(44, Time.valueOf("3:3:3"), new String[] {"Test 7", "Test 8", "Test 9", "Test 10", "Test 11", "Test 12"}, 120, 3);
         Ride ride4 = new Ride(67, Time.valueOf("5:5:5"), new String[] {"Test 10", "Test 11", "Test 12", "Test 13", "Test 14", "Test 15", "Test 16"}, 1, 420);
@@ -19,13 +19,15 @@ public class Main {
 
         Ride[] rideArray = {null, ride1, ride2, ride3, ride4, ride5, ride6, ride7};
 
+        heap.insert(ride10);
         heap.insert(ride1);
         heap.insert(ride9);
-        heap.insert(ride10);
+        heap.insert(ride7);
+        heap.insert(ride8);
+        heap.insert(ride5);
         //heap.sort();
 
         printer.printTime(heap);
-        System.out.println(heap.getTimeDiff(ride6, ride1));
         heap.dump();
 
     }
