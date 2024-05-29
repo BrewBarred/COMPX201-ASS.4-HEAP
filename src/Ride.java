@@ -56,6 +56,7 @@ public class Ride implements Comparable<Ride> {
         if (passenger != null || passenger.trim().length() != 0)
             init(id, time, new String[]{passenger}, startId, endId);
         else
+            // interrupts the construction of this ride, leaving time as null
             System.out.println("Unable to create ride! Passenger was invalid...");
     }
 
@@ -72,10 +73,20 @@ public class Ride implements Comparable<Ride> {
         if (!(passengers.length < 1 || passengers.length > MAX_PASSENGERS))
             init(id, time, passengers, startId, endId);
         else
+            // interrupts the construction of this ride, leaving time as null
             System.out.println("Unable to create ride! One or more passengers were invalid...");
     }
 
     private void init(int id, Time time, String[] passengers, int startId, int endId) {
+        int timeSize = time.toString().split(",").length;
+
+        if (id <= 0)
+            System.out.println("Unable to create ride! One or more passengers were invalid...");
+        if (timeSize == 3)
+            System.out.println("Unable to create ride! An invalid time string was passed... \nCorrect 24-hour time Format = ##:##:##");
+        if (startId <= 0 && endId <= 0)
+            System.out.println("Unable to create ride! An invalid location id was detected...");
+
         this.id = id;
         this.time = time;
         // add each passenger individually to ensure passenger count is taken

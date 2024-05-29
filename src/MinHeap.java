@@ -40,15 +40,28 @@ public class MinHeap {
      * @return A boolean value that is true if all rides are successfully inserted into the heap, else returns false
      */
     public boolean insert(Ride[] rideArray) {
-        // return early if the passed array contains no rides
-        if (rideArray == null || isEmpty(rideArray)) {
-            System.out.println("Unable to add ride! The passed ride array was either null or empty...");
+        // return early if the passed array is null
+        if (rideArray == null) {
+            System.out.println("Unable to add ride array! The passed ride array was null..");
+            return false;
+        }
+
+        // return early if the passed array length is beyond the maximum capacity
+        if (rideArray.length < 1 || rideArray.length > MAX_CAPACITY) {
+            System.out.println("Unable to add ride array! The passed ride array length was an invalid size...");
+            return false;
+        }
+
+        // return early if the passed array contains no rides or only null elements
+        if (isEmpty(rideArray)) {
+            System.out.println("Unable to add ride array! The passed ride array was empty...");
             return false;
         }
 
         // loops through the passed array and inserts any rides that it contains
         for (Ride ride : rideArray) {
-            if (ride == null)
+            // if the current ride is null or the rides construction was interrupted
+            if (ride == null || ride.time == null)
                 continue;
 
             // if this ride is successfully inserted
@@ -104,7 +117,7 @@ public class MinHeap {
      */
     public boolean remove(Ride r) {
         debug("Attempting to remove ride...", "remove");
-        if (r == null)
+        if (r == null || rides == null)
             return false;
 
         // return early if the passed ride is not contained in the heap
@@ -148,10 +161,10 @@ public class MinHeap {
      * @return A boolean value that is true if the heap contains any rides, else returns false.
      */
     public boolean isEmpty(Ride[] rides) {
-        // if the index pointer hasn't been moved, this heap must be empty
-        if (next == 1)
-            return false;
-
+        // if the passed array has a length of zero it cannot contain any elements
+        if (rides.length == 0)
+            return true;
+        
         // else iterates through each element in the heap
         for (Object element : rides)
             // if the current element is a Ride object, then the heap is not empty - return false
@@ -167,8 +180,8 @@ public class MinHeap {
      * @return A boolean value that is true if the passed ride is already contained within the heap, else returns false
      */
     public boolean hasRide(Ride r) {
-        // if the heap is empty, it must not contain the passed ride
-        if (isEmpty())
+        // if the heap is empty or the ride is null, it must not contain the passed ride
+        if (isEmpty() || r == null)
             return false;
 
         // sets pointers at each end of the heap
@@ -183,17 +196,6 @@ public class MinHeap {
         return false;
     }
 
-
-
-    /**
-     * Puts the heap in heap order. Starts at the lowest node that could
-     * possibly have any children, and works back towards the root, down-heaping at each node
-     * @return A heapified version of the default ride array
-     */
-    public Ride[] heapify() {
-        return heapify(next - 1, rides);
-    }
-
     /**
      * Takes a heap and puts it in heap order. Starts at the lowest node that could
      * possibly have any children, and works back towards the root, down-heaping at each node
@@ -202,14 +204,14 @@ public class MinHeap {
      */
     public Ride[] heapify(int rideNum, Ride[] rideArray) {
         // if the passed ride array length is greater than the max. capacity, reject it and return early
-        if (rideArray.length > MAX_CAPACITY) {
-            debug("Invalid ride array length! Ride array was greater than the maximum allowed capacity... RideCount: " + rideNum + ", Max. Capacity: " + MAX_CAPACITY, "heapify(int rideNum, Ride[] rideArray)");
+        if (rideArray.length == 0 || rideArray.length > MAX_CAPACITY) {
+            debug("Unable to process ride array! An invalid array size was detected... RideCount: " + rideNum + ", Max. Capacity: " + MAX_CAPACITY, "heapify(int rideNum, Ride[] rideArray)");
             return null;
         }
 
-        // if the passed ride count was below zero, count the rides in the passed array
-        if (rideNum < 1 || rideNum > rides.length) {
-            debug("Invalid ride count passed! Must be at least 1 ride in the heap to heapify... RideCount: " + rideNum, "heapify(int rideNum, Ride[] rideArray)");
+        // if the passed ride number is out of bounds of the array
+        if (rideNum < 1 || rideNum >= rideArray.length) {
+            debug("Unable to process ride number! An invalid number of rides was detected...", "heapify(int rideNum, Ride[] rideArray)");
             return null;
         }
 
@@ -220,8 +222,9 @@ public class MinHeap {
         if (rides[0] != null)
             convertTo1Based(rides);
 
+        // get parent index based on passed ride number
         int indexParent = rideNum / 2;
-        // starting at least non-leaf node, down-heap each root
+        // starting at the lasts non-leaf node, down-heap each parent until root is reached
         for (int i = indexParent; i > 0; i--)
             downHeap(i);
 
@@ -265,9 +268,15 @@ public class MinHeap {
      * @return The first ride object in the top of the heap if any exists
      */
     public Ride peek() {
+        if (rides == null)
+            return null;
+
         return rides[1];
     }
 
+    /**
+     * Dumps the ride info of the default heap to the console by iterating through the heap and calling Ride.toString on each ride.
+     */
     public void dump() {
         for (Ride ride : rides)
             if (ride != null)
@@ -346,8 +355,10 @@ public class MinHeap {
         // for each ride in the array, compare location id's
         for(Ride ride : rides) {
             // if the ride is null, there must be no rides left to check
-            if (ride == null)
+            if (ride == null) {
+                System.out.println("Skipping, ride is null!");
                 continue;
+            }
 
             // if this ride is not booked within 10 minutes of the passed right, check next ride
             if (getTimeDiff(r, ride) > 10)
@@ -357,6 +368,7 @@ public class MinHeap {
             if (ride.startId == r.startId && ride.endId == r.endId) {
                 // updates this rides time to the later time
                 ride.time = r.compareTo(ride) < 0 ? ride.time : r.time;
+                System.out.println("The passed ride was successfully optimized with a new time of " + ride.getTime() + "");
                 // try merge passengers, if this doesn't work, this will return false
                 return ride.addPassenger(r.passengers);
             }
