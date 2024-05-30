@@ -60,8 +60,9 @@ public class MinHeap {
 
         // loops through the passed array and inserts any rides that it contains
         for (Ride ride : rideArray) {
-            // if the current ride is null or the rides construction was interrupted
-            if (ride == null || ride.time == null)
+            // if the current ride is null or the rides construction
+            // was interrupted, do not add it to the heap
+            if (ride == null || !ride.isValid)
                 continue;
 
             // if this ride is successfully inserted

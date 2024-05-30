@@ -64,10 +64,18 @@ public class MinHeapTest {
         defaultRides = new Ride[] {ride1, ride2, ride3, ride4};
     }
 
+// Test class: Ride.java
+// Test section: compareTo()
+
+    /**
+     * Tests to ensure that compareTo(Ride) returns false
+     */
+
+// Test class: MinHeap.java
 // Test section: insert(Ride)
 
     /**
-     * Tests to ensure that attempting to insert a null array will trigger an error message
+     * Tests to ensure that the insert(Ride[]) method returns an error when attempting to insert a null array
      */
     @Test
     @Order(1)
@@ -86,7 +94,7 @@ public class MinHeapTest {
     }
 
     /**
-     * Tests to ensure that inserting an empty array will not add any rides or increment the ride count
+     * Tests to ensure that the insert(Ride[]) method does not increment ride count when inserting an empty array
      */
     @Test
     @Order(2)
@@ -106,7 +114,7 @@ public class MinHeapTest {
     }
 
     /**
-     * Tests to ensure that inserting an empty array will not increment the index pointer (next)
+     * Tests to ensure that insert(Ride[]) does not increment the index pointer when inserting an empty array
      */
     @Test
     @Order(3)
@@ -949,8 +957,8 @@ public class MinHeapTest {
      * Tests to ensure that the peek() method returns null when the heap is null
      */
     @Test
-    @DisplayName("Test peek(): ")
-    public void testPeek() {
+    @DisplayName("Test peek(): Peek at null heap, check null")
+    public void testPeekHeapNull() {
 
     }
 
@@ -958,8 +966,8 @@ public class MinHeapTest {
      * Tests to ensure that the peek() method returns null when peeking at an empty heap
      */
     @Test
-    @DisplayName("Test peek(): ")
-    public void testPeek() {
+    @DisplayName("Test peek(): Peek at empty heap, check null")
+    public void testPeekHeapEmpty() {
 
     }
 
@@ -967,8 +975,8 @@ public class MinHeapTest {
      * Tests to ensure that the peek() method returns the root value when peeking at a heap with a single value
      */
     @Test
-    @DisplayName("Test peek(): ")
-    public void testPeek() {
+    @DisplayName("Test peek(): Peek at single-heap, check root")
+    public void testPeekHeapSingle() {
 
     }
 
@@ -976,8 +984,26 @@ public class MinHeapTest {
      * Tests to ensure that the peek() method returns the root value when peeking at a heap with multiple values
      */
     @Test
-    @DisplayName("Test peek(): ")
-    public void testPeek() {
+    @DisplayName("Test peek(): Peek at multi-heap, check root")
+    public void testPeekHeapMulti() {
+
+    }
+
+    /**
+     * Tests to ensure that the peek() method returns the root value when peeking at a full heap
+     */
+    @Test
+    @DisplayName("Test peek(): Peek at full heap, check root")
+    public void testPeekHeapFull() {
+
+    }
+
+    /**
+     * Tests to ensure that the peek() method does not remove the value after peeking at it
+     */
+    @Test
+    @DisplayName("Test peek(): Peek after a valid peek is performed, check root")
+    public void testPeekAfterPeek() {
 
     }
 
