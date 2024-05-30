@@ -17,6 +17,10 @@ public class Ride implements Comparable<Ride> {
      */
     private final int MAX_PASSENGERS = 6;
     /**
+     * True if the ride fields are correctly initialized and validated, else set to false by default and is not suitable for a heap
+     */
+    public boolean isValid = false;
+    /**
      * The identification number of this ride request
      */
     public int id;
@@ -78,22 +82,48 @@ public class Ride implements Comparable<Ride> {
     }
 
     private void init(int id, Time time, String[] passengers, int startId, int endId) {
-        int timeSize = time.toString().split(",").length;
+        // ensures ride id is valid
+        if (id > 0)
+            this.id = id;
+        else {
+            System.out.println("Unable to create ride! An invalid ride id was detected...");
+            return;
+        }
 
-        if (id <= 0)
-            System.out.println("Unable to create ride! One or more passengers were invalid...");
+        // get length of time string array
+        int timeSize = time.toString().split(":").length;
+        // ensures time is valid
         if (timeSize == 3)
+            this.time = time;
+        else {
             System.out.println("Unable to create ride! An invalid time string was passed... \nCorrect 24-hour time Format = ##:##:##");
-        if (startId <= 0 && endId <= 0)
-            System.out.println("Unable to create ride! An invalid location id was detected...");
+            return;
+        }
 
-        this.id = id;
-        this.time = time;
-        // add each passenger individually to ensure passenger count is taken
-        addPassenger(passengers);
-        // ensures location i.d's are greater than or equal to 1
-        this.startId = startId > 0 ? startId : 1;
-        this.endId = endId > 0 ? endId : 1;
+        // ensures all passengers are valid
+        if (!addPassenger(passengers)) {
+            System.out.println("Unable to create ride! At least one invalid passenger was detected...");
+            return;
+        }
+
+        // ensures start id is valid
+        if (startId >= 0)
+            this.startId = startId;
+        else {
+            System.out.println("Unable to create ride! An invalid start id was detected...");
+            return;
+        }
+
+        // ensures end id is valid
+        if (endId >= 0)
+            this.endId = endId;
+        else {
+            System.out.println("Unable to create ride! An invalid end id was detected");
+            return;
+        }
+
+        // validates ride
+        isValid = true;
     }
 
     /**
