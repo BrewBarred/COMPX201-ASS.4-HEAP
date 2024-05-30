@@ -81,21 +81,25 @@ public class Ride implements Comparable<Ride> {
             System.out.println("Unable to create ride! One or more passengers were invalid...");
     }
 
+    /**
+     * Initializes a ride object or nullifies it based on the validity of the passed parameters
+     * @param id The ride id for this ride
+     * @param time The timestamp for this ride
+     * @param passengers The passengers for this ride
+     * @param startId The start location id for this ride
+     * @param endId The end location id for this ride
+     */
     private void init(int id, Time time, String[] passengers, int startId, int endId) {
         // ensures ride id is valid
-        if (id > 0)
-            this.id = id;
-        else {
+        if (id <= 0) {
             System.out.println("Unable to create ride! An invalid ride id was detected...");
             return;
         }
 
-        // get length of time string array
+        // split times into hh/mm/ss to validate its format
         int timeSize = time.toString().split(":").length;
         // ensures time is valid
-        if (timeSize == 3)
-            this.time = time;
-        else {
+        if (timeSize != 3) {
             System.out.println("Unable to create ride! An invalid time string was passed... \nCorrect 24-hour time Format = ##:##:##");
             return;
         }
@@ -103,26 +107,29 @@ public class Ride implements Comparable<Ride> {
         // ensures all passengers are valid
         if (!addPassenger(passengers)) {
             System.out.println("Unable to create ride! At least one invalid passenger was detected...");
+            passengers = null;
             return;
         }
 
         // ensures start id is valid
-        if (startId >= 0)
-            this.startId = startId;
-        else {
+        if (startId < 0) {
             System.out.println("Unable to create ride! An invalid start id was detected...");
             return;
         }
 
         // ensures end id is valid
-        if (endId >= 0)
-            this.endId = endId;
-        else {
+        if (endId < 0) {
             System.out.println("Unable to create ride! An invalid end id was detected");
             return;
         }
 
-        // validates ride
+        // update fields with validated parameters
+        this.id = id;
+        this.time = time;
+        this.passengers = passengers;
+        this.startId = startId;
+        this.endId = endId;
+        // marks this ride as valid
         isValid = true;
     }
 
@@ -154,8 +161,14 @@ public class Ride implements Comparable<Ride> {
      * @return -1 if the timestamp of ride1 is less than that of ride2<br><br>
      *          0 if the timestamp of ride1 is equal to that of ride2<br><br>
      *          1 if the timestamp of ride1 is greater than that of ride2
+     *          Integer.MAX_VALUE if one of the compared rides are invalid
      */
     public int compareTo(Ride ride2) {
+        // if one of the rides are invalid, do not proceed
+        if (!isValid || !ride2.isValid) {
+            System.out.println("Unable to compare rides! At least one invalid ride was detected...");
+            return Integer.MAX_VALUE;
+        }
         return time.compareTo(ride2.time);
     }
 
@@ -220,7 +233,7 @@ public class Ride implements Comparable<Ride> {
      * Formats the passenger array ready for printing
      * @return A string value representing each passenger in this ride request on a new line
      */
-    private String fPassengers() {
+    public String fPassengers() {
         // creates a string builder object for efficient string concatenation
         StringBuilder fPassengers = new StringBuilder();
 

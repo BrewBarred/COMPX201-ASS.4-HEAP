@@ -68,8 +68,108 @@ public class MinHeapTest {
 // Test section: compareTo()
 
     /**
-     * Tests to ensure that compareTo(Ride) returns false
+     * Tests to ensure that compareTo(Ride) returns max integer value when checking if two invalid rides are compared against each other
      */
+    @Test
+    @DisplayName("Test compareTo(Ride): Compare two invalid rides, check max int")
+    public void testCompareToInvalidRides() {
+
+    }
+
+    /**
+     * Tests to ensure that compareTo(Ride) returns max integer value when checking if a valid ride is greater than an invalid ride
+     */
+    @Test
+    @DisplayName("Test compareTo(Ride): Check if valid ride > invalid ride, check max int")
+    public void testCompareToGreaterThanInvalid() {
+
+    }
+
+    /**
+     * Tests to ensure that compareTo(Ride) returns a value greater than 0 when the extended ride is greater than the passed ride, based on timestamp values
+     */
+    @Test
+    @DisplayName("Test compareTo(Ride): Check if valid ride > valid ride, check > 0")
+    public void testCompareToGreaterThanValid() {
+
+    }
+
+    /**
+     * Tests to ensure that compareTo(Ride) returns max integer value when checking if a valid ride is equal to an invalid ride
+     */
+    @Test
+    @DisplayName("Test compareTo(Ride): Check if valid ride == invalid ride, check max int")
+    public void testCompareToEqualToInvalid() {
+
+    }
+
+    /**
+     * Tests to ensure that compareTo(Ride) returns 0 when the extended ride is equal to the passed ride, based on timestamp values
+     */
+    @Test
+    @DisplayName("Test compareTo(Ride): Check if valid ride == valid ride, check 0")
+    public void testCompareToEqualToValid() {
+
+    }
+
+    /**
+     * Tests to ensure that compareTo(Ride) returns max integer value when checking if a valid ride is less than an invalid ride
+     */
+    @Test
+    @DisplayName("Test compareTo(Ride): Check if valid ride < invalid ride, check max int")
+    public void testCompareToLessThanInvalid() {
+
+    }
+
+    /**
+     * Tests to ensure that compareTo(Ride) returns a value less than 0 when the extended ride is less than the passed ride, based on timestamp values
+     */
+    @Test
+    @DisplayName("Test compareTo(Ride): Check if valid ride < valid ride, check < 0")
+    public void testCompareToLessThanValid() {
+
+    }
+
+// Test section: toString()
+    /**
+     * Tests to ensure that toString() returns an error when attempting to print a null ride
+     */
+    @Test
+    @DisplayName("Test toString(): Print null ride, check error")
+    public void testToStringPrintNull() {
+
+    }
+
+    /**
+     * Tests to ensure that toString() returns an error when attempting to print an invalid ride
+     */
+    @Test
+    @DisplayName("Test toString(): Print invalid ride, check error")
+    public void testToStringPrintInvalid() {
+
+    }
+
+    /**
+     * Tests to ensure that toString() correctly overrides the default java implementation to return a fully formatted string containing the ride info
+     */
+    @Test
+    @DisplayName("Test toString(): Print valid ride to console, check format")
+    public void testToStringPrintValid() {
+        // using the default ride1...
+
+        // define the expected and actual output
+        String expectedOutput = String.format("--- Ride %03d -------\n", "%03" + ride1.id + "d") +
+                String.format("Time: %tT\n", ride1.time) +
+                String.format("Start ID: %d\n", ride1.startId) +
+                String.format("End ID: %d\n", ride1.endId) +
+                "Passengers:\n" + ride1.fPassengers() +
+                "--------------------";
+        String actualOutput = ride1.toString();
+
+        // check both outputs match
+        assertEquals(expectedOutput, actualOutput);
+
+    }
 
 // Test class: MinHeap.java
 // Test section: insert(Ride)
@@ -89,7 +189,7 @@ public class MinHeapTest {
         String expectedOutput = "Unable to add ride array! The passed ride array was null..";
         String actualOutput = getStream();
 
-        // compare expected output against actual output
+        // check outputs match
         assertEquals(expectedOutput, actualOutput);
     }
 
@@ -109,7 +209,7 @@ public class MinHeapTest {
         int expectedCount = 0;
         int actualCount = heap.next - 1;
 
-        // list should still be empty
+        // check list is still empty
         assertEquals(expectedCount, actualCount);
     }
 
@@ -130,7 +230,7 @@ public class MinHeapTest {
         // pointer should not have moved
         int actualIndex = heap.next;
 
-        // assert that index values remain unchanged
+        // check index values remain unchanged
         assertEquals(expectedIndex, actualIndex);
     }
 
@@ -150,7 +250,7 @@ public class MinHeapTest {
         Ride expectedRide = ride1;
         Ride actualRide = heap.rides[1];
 
-        // ensure the first passed ride is at index 1 of the heap
+        // check the first passed ride is at index 1 of the heap
         assertEquals(expectedRide, actualRide);
     }
 
@@ -168,7 +268,7 @@ public class MinHeapTest {
         Ride expectedRide = ride1;
         Ride actualRide = heap.rides[1];
 
-        // check if the 1st index is equal to the first ride
+        // check if the first passed ride is at index 1 of the heap
         assertEquals(expectedRide, actualRide);
     }
 
@@ -1007,12 +1107,91 @@ public class MinHeapTest {
 
     }
 
-// Test section:
+// Test section: dump()
 
 
+    /**
+     * Tests to ensure that the dump() method returns an error when attempting to dump a null heap
+     */
+    @Test
+    @DisplayName("Test dump(): ")
+    public void testDump() {
 
+    }
 
+    /**
+     * Tests to ensure that the dump() method returns an error when attempting to dump an empty heap
+     */
+    @Test
+    @DisplayName("Test dump(): ")
+    public void testDump() {
 
+    }
+
+    /**
+     * Tests to ensure that the dump() method correctly dumps a heap w/single ride
+     */
+    @Test
+    @DisplayName("Test dump(): ")
+    public void testDump() {
+
+    }
+
+    /**
+     * Tests to ensure that the dump() method correctly dumps a heap w/multiple rides
+     */
+    @Test
+    @DisplayName("Test dump(): ")
+    public void testDump() {
+
+    }
+
+// Test sectionL sort()
+
+    /**
+     * Tests to ensure that the sort() method returns an error when attempting to sort a null heap
+     */
+    @Test
+    @DisplayName("Test sort(): ")
+    public void testSort() {
+
+    }
+
+    /**
+     * Tests to ensure that the sort() method returns an unchanged heap when attempting to sort an empty heap
+     */
+    @Test
+    @DisplayName("Test sort(): ")
+    public void testSort() {
+
+    }
+
+    /**
+     * Tests to ensure that the sort() method correctly sorts a heap w/single ride
+     */
+    @Test
+    @DisplayName("Test sort(): ")
+    public void testSort() {
+
+    }
+
+    /**
+     * Tests to ensure that the sort() method correctly sorts a heap w/multiple rides
+     */
+    @Test
+    @DisplayName("Test sort(): ")
+    public void testSort() {
+
+    }
+
+    /**
+     * Tests to ensure that the sort() method correctly sorts a full heap
+     */
+    @Test
+    @DisplayName("Test sort(): ")
+    public void testSort() {
+
+    }
 
     /**
      * Reads the console, trims the string of new lines and whitespace and returns the output message as a string
