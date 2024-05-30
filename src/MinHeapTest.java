@@ -640,197 +640,346 @@ public class MinHeapTest {
 
     }
 
-// Test section: isEmpty()
-
-    /**
-     * Tests to ensure that isEmpty() returns true when the heap is null
-     */
-    @Test
-    @DisplayName("Test isEmpty(): Check null heap is empty, check true")
-    public void testIsEmptyHeapNull() {
-
-    }
-
-    /**
-     * Tests to ensure that isEmpty() returns true when the heap is empty
-     */
-    @Test
-    @DisplayName("Test isEmpty(): Check empty heap is empty, check true")
-    public void testIsEmptyHeapEmpty() {
-
-    }
-
-    /**
-     * Tests to ensure that isEmpty(Ride[]) returns true when the heap has a length of 0
-     */
-    @Test
-    @DisplayName("Test isEmpty(): Check length 0 array is empty, check true")
-    public void testIsEmptyHeapSize0() {
-
-    }
-
-    /**
-     * Tests to ensure that isEmpty() returns false when the heap only contains one ride
-     */
-    @Test
-    @DisplayName("Test isEmpty(): ")
-    public void testIsEmpty() {
-
-    }
-
-    /**
-     * Tests to ensure that isEmpty() returns false when the heap is full
-     */
-    @Test
-    @DisplayName("Test isEmpty(): ")
-    public void testIsEmpty() {
-
-    }
-
 // Test section: isEmpty(Ride[])
 
     /**
      * Tests to ensure that isEmpty(Ride[]) returns true when the passed array is null
      */
     @Test
-    @DisplayName("Test isEmpty(Ride[]): ")
-    public void testIsEmpty() {
+    @DisplayName("Test isEmpty(Ride[]): Check if a null array is empty, check true")
+    public void testIsEmptyArrayNull() {
 
     }
 
     /**
      * Tests to ensure that isEmpty(Ride[]) returns true when the passed array is empty
      */
+    @Test
+    @DisplayName("Test isEmpty(Ride[]): Check if an empty array is empty, check true")
+    public void testIsEmptyArrayEmpty() {
+
+    }
 
     /**
      * Tests to ensure that isEmpty(Ride[]) returns true when the passed array has a length of 0
      */
+    @Test
+    @DisplayName("Test isEmpty(Ride[]): Check if array w/size of 0 is empty, check true")
+    public void testIsEmptyArraySize0() {
 
-    /**
-     * Tests to ensure that isEmpty(Ride[]) returns false when the heap only contains one ride
-     */
-
-    /**
-     * Tests to ensure that isEmpty(Ride[]) returns false when the heap is full
-     */
+    }
 
     /**
      * Tests to ensure that isEmpty(Ride[]) returns true when all elements in the passed array are null
      */
+    @Test
+    @DisplayName("Test isEmpty(Ride[]): Check if array of nulls is empty, check true")
+    public void testIsEmptyArrayNulls() {
+
+    }
+
+    /**
+     * Tests to ensure that isEmpty(Ride[]) returns false when the passed array only contains a single ride
+     */
+    @Test
+    @DisplayName("Test isEmpty(Ride[]): Check if array w/single ride is empty, check false")
+    public void testIsEmptyArraySingle() {
+
+    }
+
+    /**
+     * Tests to ensure that isEmpty(Ride[]) returns false when the passed array contains multiple rides
+     */
+    @Test
+    @DisplayName("Test isEmpty(Ride[]): Check if array w/multiple rides is empty, check false")
+    public void testIsEmptyArrayMulti() {
+
+    }
 
 // Test section: hasRide(Ride)
 
     /**
-     * Tests to ensure that hasRide(Ride) returns false when the passed ride is null
-     */
-
-    /**
      * Tests to ensure that hasRide(Ride) returns false when the heap is null
      */
+    @Test
+    @DisplayName("Test hasRide(Ride): Check null heap for a ride, check false")
+    public void testHasRideHeapNull() {
+
+    }
 
     /**
      * Tests to ensure that hasRide(Ride) returns false when the heap is empty
      */
+    @Test
+    @DisplayName("Test hasRide(Ride): Check empty heap for a ride, check false")
+    public void testHasRideHeapEmpty() {
+
+    }
 
     /**
-     * Tests to ensure that hasRide(Ride) returns false when the passed ride is not contained within the heap
+     * Tests to ensure that hasRide(Ride) returns false when the passed ride is null
      */
+    @Test
+    @DisplayName("Test hasRide(Ride): Check heap for null ride, check false")
+    public void testHasRideNull() {
+
+    }
+
+    /**
+     * Tests to ensure that hasRide(Ride) returns false when the passed ride is not contained within a heap w/single ride
+     */
+    @Test
+    @DisplayName("Test hasRide(Ride): Check single-heap for un-contained ride, check false")
+    public void testHasRideUncontainedSingle() {
+
+    }
 
     /**
      * Tests to ensure that hasRide(Ride) returns true when the passed ride is contained with a heap size of 1
      */
+    @Test
+    @DisplayName("Test hasRide(Ride): Add ride to single heap and check for it, check true")
+    public void testHasRideContainedHeapSingle() {
+
+    }
+
+    /**
+     * Tests to ensure that hasRide(Ride) returns false when the passed ride is not contained within a heap w/multiple rides
+     */
+    @Test
+    @DisplayName("Test hasRide(Ride): Check multi heap for un-contained ride, check false")
+    public void testHasRideUncontainedMulti() {
+
+    }
+
+    /**
+     * Tests to ensure that hasRide(Ride) returns true when the passed ride is contained within a heap w/multiple rides
+     */
+    @Test
+    @DisplayName("Test hasRide(Ride): Check multi heap for contained ride, check true")
+    public void testHasRideContainedMulti() {
+
+    }
+
+    /**
+     * Tests to ensure that hasRide(Ride) returns false when the passed ride is not contained within a full heap
+     */
+    @Test
+    @DisplayName("Test hasRide(Ride): Check full heap for un-contained ride, check false")
+    public void testHasRideUncontainedFull() {
+
+    }
 
     /**
      * Tests to ensure that hasRide(Ride) returns true when the passed ride is contained within a full heap
      */
+    @Test
+    @DisplayName("Test hasRide(Ride): Check full heap for contained ride, check true")
+    public void testHasRideContainedFull() {
+
+    }
 
 // Test section: heapify(int, Ride[])
 
     /**
      * Tests to ensure that heapify(int, Ride[]) rejects a ride number that is less than 1
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify w/ride num < 1, check error")
+    public void testHeapifyRideNumTooLow() {
+
+    }
 
     /**
      * Tests to ensure that heapify(int, Ride[]) rejects a ride number greater than the array length
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify w/ride num >= array length")
+    public void testHeapifyRideNumTooHigh() {
+
+    }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) rejects a null Ride[] parameter
+     * Tests to ensure that heapify(int, Ride[]) returns a null Ride[] parameter since it is already heapified
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify w/null array, check unchanged")
+    public void testHeapifyArrayNull() {
+
+    }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) rejects a passed ride array size of 0
+     * Tests to ensure that heapify(int, Ride[]) returns a null Ride[] parameter since it is already heapified
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify w/array of nulls, check unchanged")
+    public void testHeapifyArrayNulls() {
+
+    }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) rejects a passed ride array size that is greater than the max. capacity value
+     * Tests to ensure that heapify(int, Ride[]) returns a passed ride w/array size of 0
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify w/array size of 0, check unchanged")
+    public void testHeapifyArraySize0() {
+
+    }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) correctly coverts a 0-based ride array into a 1-based array and heapifies
+     * Tests to ensure that heapify(int, Ride[]) rejects a passed ride w/array size of 0
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify w/array size of 0, check unchanged")
+    public void testHeapifyArraySize1() {
 
-    /**
-     * Tests to ensure that heapify(int, Ride[]) accepts a 1-based ride array
-     */
-
-    /**
-     * Tests to ensure that heapify(int, Ride[]) can heapify an array containing random null elements
-     */
+    }
 
     /**
      * Tests to ensure that heapify(int, Ride[]) can heapify an empty array
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify empty array, check unchanged")
+    public void testHeapifyArrayEmpty() {
+
+    }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) can heapify an array with a single value
+     * Tests to ensure that heapify(int, Ride[]) rejects a passed ride array size that is greater than the max. capacity value
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): ")
+    public void testHeapifyArrayTooBig() {
+
+    }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) can heapify an array with multiple values
+     * Tests to ensure that heapify(int, Ride[]) correctly coverts a 0-based ride array into a 1-based array and heapifies
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify a zero-based array, check root")
+    public void testHeapifyBase0() {
+
+    }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) rejects a full array when the heap is not empty
+     * Tests to ensure that heapify(int, Ride[]) accepts a 1-based ride array
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify a one-based array, check root")
+    public void testHeapifyBase1() {
+
+    }
+
+    /**
+     * Tests to ensure that heapify(int, Ride[]) can heapify an array containing random null elements
+     */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify array w/random nulls, check last leaf")
+    public void testHeapifyRandNulls() {
+
+    }
+
+    /**
+     * Tests to ensure that heapify(int, Ride[]) can heapify an array with a single value when the heap is empty
+     */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify single-array, check root")
+    public void testHeapifyArraySingle() {
+
+    }
+
+    /**
+     * Tests to ensure that heapify(int, Ride[]) can heapify an array with multiple values when the heap is empty
+     */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify multi-array, check root")
+    public void testHeapifyArrayMulti() {
+
+    }
 
     /**
      * Tests to ensure that heapify(int, Ride[]) accepts a full array when the heap is empty
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify full array w/empty heap, check root")
+    public void testHeapifyArrayFull() {
+
+    }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) accepts a valid ride number and ride object
+     * Tests to ensure that heapify(int, Ride[]) accepts a full array when the heap already has a single ride
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify full array w/single heap, check last leaf")
+    public void testHeapifyArrayFullHeapSingle() {
+
+    }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) will still heapify with an invalid ride number passed
+     * Tests to ensure that heapify(int, Ride[]) accepts a full array when the heap already has multiple rides
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify full array w/multi heap")
+    public void testHeapifyArrayFullHeapMulti() {
+
+    }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) will still heapify with a valid but unexpected ride number passed
+     * Tests to ensure that heapify(int, Ride[]) accepts a full array when the heap is already full
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify full array w/full heap")
+    public void testHeapifyArrayFullHeapFull() {
+
+    }
 
     /**
-     * Tests to ensure that the default heap is updated with the heapified array
+     * Tests to ensure that heapify(int, Ride[]) updates the default heap with the heapified array
      */
+    @Test
+    @DisplayName("Test heapify(int, Ride[]): Heapify w/valid params, check heap")
+    public void testHeapifyHeapUpdate() {
+
+    }
 
 // Test section: peek()
 
     /**
      * Tests to ensure that the peek() method returns null when the heap is null
      */
+    @Test
+    @DisplayName("Test peek(): ")
+    public void testPeek() {
+
+    }
 
     /**
      * Tests to ensure that the peek() method returns null when peeking at an empty heap
      */
+    @Test
+    @DisplayName("Test peek(): ")
+    public void testPeek() {
+
+    }
 
     /**
      * Tests to ensure that the peek() method returns the root value when peeking at a heap with a single value
      */
+    @Test
+    @DisplayName("Test peek(): ")
+    public void testPeek() {
+
+    }
 
     /**
      * Tests to ensure that the peek() method returns the root value when peeking at a heap with multiple values
      */
+    @Test
+    @DisplayName("Test peek(): ")
+    public void testPeek() {
+
+    }
 
 // Test section:
 
