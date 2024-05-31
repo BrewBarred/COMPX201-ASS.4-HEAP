@@ -1114,8 +1114,8 @@ public class MinHeapTest {
      * Tests to ensure that the dump() method returns an error when attempting to dump a null heap
      */
     @Test
-    @DisplayName("Test dump(): ")
-    public void testDump() {
+    @DisplayName("Test dump(): Attempt to dump a null heap, check error")
+    public void testDumpHeapNull() {
 
     }
 
@@ -1123,8 +1123,8 @@ public class MinHeapTest {
      * Tests to ensure that the dump() method returns an error when attempting to dump an empty heap
      */
     @Test
-    @DisplayName("Test dump(): ")
-    public void testDump() {
+    @DisplayName("Test dump(): Attempt to dump an empty heap, check error")
+    public void testDumpHeapEmpty() {
 
     }
 
@@ -1132,8 +1132,8 @@ public class MinHeapTest {
      * Tests to ensure that the dump() method correctly dumps a heap w/single ride
      */
     @Test
-    @DisplayName("Test dump(): ")
-    public void testDump() {
+    @DisplayName("Test dump(): Dump a single-heap, check output")
+    public void testDumpHeapSingle() {
 
     }
 
@@ -1141,8 +1141,8 @@ public class MinHeapTest {
      * Tests to ensure that the dump() method correctly dumps a heap w/multiple rides
      */
     @Test
-    @DisplayName("Test dump(): ")
-    public void testDump() {
+    @DisplayName("Test dump(): Dump a multi-heap, check output")
+    public void testDumpHeapMulti() {
 
     }
 
@@ -1152,8 +1152,8 @@ public class MinHeapTest {
      * Tests to ensure that the sort() method returns an error when attempting to sort a null heap
      */
     @Test
-    @DisplayName("Test sort(): ")
-    public void testSort() {
+    @DisplayName("Test sort(): Attempt to sort a null heap, check error")
+    public void testSortHeapNull() {
 
     }
 
@@ -1161,8 +1161,8 @@ public class MinHeapTest {
      * Tests to ensure that the sort() method returns an unchanged heap when attempting to sort an empty heap
      */
     @Test
-    @DisplayName("Test sort(): ")
-    public void testSort() {
+    @DisplayName("Test sort(): Sort an empty heap, check unchanged")
+    public void testSortHeapEmpty() {
 
     }
 
@@ -1170,8 +1170,8 @@ public class MinHeapTest {
      * Tests to ensure that the sort() method correctly sorts a heap w/single ride
      */
     @Test
-    @DisplayName("Test sort(): ")
-    public void testSort() {
+    @DisplayName("Test sort(): Sort a single-heap, check output")
+    public void testSortHeapSingle() {
 
     }
 
@@ -1179,8 +1179,8 @@ public class MinHeapTest {
      * Tests to ensure that the sort() method correctly sorts a heap w/multiple rides
      */
     @Test
-    @DisplayName("Test sort(): ")
-    public void testSort() {
+    @DisplayName("Test sort(): Sort a multi-heap, check output")
+    public void testSortHeapMulti() {
 
     }
 
@@ -1188,8 +1188,8 @@ public class MinHeapTest {
      * Tests to ensure that the sort() method correctly sorts a full heap
      */
     @Test
-    @DisplayName("Test sort(): ")
-    public void testSort() {
+    @DisplayName("Test sort(): Sort a full heap, check output")
+    public void testSortHeapFull() {
 
     }
 
