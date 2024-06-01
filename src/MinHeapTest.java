@@ -22,9 +22,13 @@ public class MinHeapTest {
      */
     private Ride[] defaultRides;
     /**
-     * Ride array that stores a custom selection of rides
+     * Mock ride (invalid): Id = 0, Time = 1:1:1, Passengers = Bic Derek, startId = 0, endId = 0"
      */
-    private Ride[] selectedRides;
+    private Ride invalidRide1;
+    /**
+     * Mock ride (invalid): Id = 420, Time = 1:1:1, Passengers = Ben Jermayne, startId = -1, endId = 1"
+     */
+    private Ride invalidRide2;
     /**
      * Mock ride: Id = 1, Time = 01:00:00, Passengers = "Passenger 1", startId = 1, endId = 2
      */
@@ -54,6 +58,9 @@ public class MinHeapTest {
         // resets the heap
         heap = new MinHeap();
 
+        invalidRide1 = new Ride(0, Time.valueOf("1:1:1"), "Bic Derek", 0, 0);
+        invalidRide2 = new Ride(420, Time.valueOf("1:1:1"), "Ben Jermayne", -1, 1);
+
         // initializes some common rides for different tests
         ride1 = new Ride(1, Time.valueOf("01:00:00"), new String[] {"Passenger 1"}, 1, 2);
         ride2 = new Ride(2, Time.valueOf("02:00:00"), new String[] {"Passenger 2"}, 2, 3);
@@ -73,7 +80,14 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test compareTo(Ride): Compare two invalid rides, check max int")
     public void testCompareToInvalidRides() {
+        // using default invalidRides 1 and 2...
 
+        // define expected and actual output
+        int expectedOutput = Integer.MAX_VALUE;
+        int actualOutput = invalidRide1.compareTo(invalidRide2);
+
+        // check for max integer
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -82,7 +96,14 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test compareTo(Ride): Check if valid ride > invalid ride, check max int")
     public void testCompareToGreaterThanInvalid() {
+        // using default ride1 and invalidRide1...
 
+        // define expected and actual output
+        int expectedOutput = Integer.MAX_VALUE;
+        int actualOutput = ride1.compareTo(invalidRide1);
+
+        // check for max integer
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -91,7 +112,13 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test compareTo(Ride): Check if valid ride > valid ride, check > 0")
     public void testCompareToGreaterThanValid() {
+        // using default rides 1 and 2...
 
+        // define actual output
+        int actualOutput = ride2.compareTo(ride1);
+
+        // check that the actual output is greater than 0
+        assertTrue(actualOutput > 0);
     }
 
     /**
@@ -100,7 +127,14 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test compareTo(Ride): Check if valid ride == invalid ride, check max int")
     public void testCompareToEqualToInvalid() {
+        // using default ride1 and invalid ride1...
 
+        // define actual output
+        int expectedOutput = Integer.MAX_VALUE;
+        int actualOutput = ride1.compareTo(invalidRide1);
+
+        // check for max integer
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -109,7 +143,15 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test compareTo(Ride): Check if valid ride == valid ride, check 0")
     public void testCompareToEqualToValid() {
+        // using default ride1 and...
+        Ride equalRide = new Ride(1, Time.valueOf("01:00:00"), "P5", 1, 1);
+        
+        // define the expected and actual outputs
+        int expectedOutput = 0;
+        int actualOutput = ride1.compareTo(equalRide);
 
+        // check that actual output represents a match (value of 0)
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -118,7 +160,14 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test compareTo(Ride): Check if valid ride < invalid ride, check max int")
     public void testCompareToLessThanInvalid() {
+        // using default ride2 and invalidRide2...
 
+        // define the expected and actual outputs
+        int expectedOutput = Integer.MAX_VALUE;
+        int actualOutput = ride2.compareTo(invalidRide2);
+
+        // check for max integer
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -127,26 +176,31 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test compareTo(Ride): Check if valid ride < valid ride, check < 0")
     public void testCompareToLessThanValid() {
+        // using default rides 1 and 2...
 
+        // define expected and actual outputs
+        int expectedOutput = -1;
+        int actualOutput = ride1.compareTo(ride2);
+
+        // check the actual output represents a lesser than (value of -1)
+        assertEquals(expectedOutput, actualOutput);
     }
 
 // Test section: toString()
-    /**
-     * Tests to ensure that toString() returns an error when attempting to print a null ride
-     */
-    @Test
-    @DisplayName("Test toString(): Print null ride, check error")
-    public void testToStringPrintNull() {
-
-    }
-
     /**
      * Tests to ensure that toString() returns an error when attempting to print an invalid ride
      */
     @Test
     @DisplayName("Test toString(): Print invalid ride, check error")
     public void testToStringPrintInvalid() {
+        // using default invalidRide1...
 
+        // define expected and actual outputs
+        String expectedOutput = "";
+        String actualOutput = invalidRide1.toString();
+
+        // check outputs match
+        //assertEquals()
     }
 
     /**
@@ -157,8 +211,10 @@ public class MinHeapTest {
     public void testToStringPrintValid() {
         // using the default ride1...
 
+        // print a valid ride to teh console
+        //System.out.println(ride1.toString());
         // define the expected and actual output
-        String expectedOutput = String.format("--- Ride %03d -------\n", "%03" + ride1.id + "d") +
+        String expectedOutput = String.format("--- Ride %03d -------\n", ride1.id) +
                 String.format("Time: %tT\n", ride1.time) +
                 String.format("Start ID: %d\n", ride1.startId) +
                 String.format("End ID: %d\n", ride1.endId) +
@@ -915,7 +971,6 @@ public class MinHeapTest {
     public void testHeapifyArrayNull() {
 
     }
-
     /**
      * Tests to ensure that heapify(int, Ride[]) returns a null Ride[] parameter since it is already heapified
      */

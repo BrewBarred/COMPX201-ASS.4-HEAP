@@ -56,12 +56,8 @@ public class Ride implements Comparable<Ride> {
      * @param endId The end location ID
      */
     public Ride(int id, Time time, String passenger, int startId, int endId) {
-        // initializes this ride if the passed passenger name is not null and not an empty string
-        if (passenger != null || passenger.trim().length() != 0)
-            init(id, time, new String[]{passenger}, startId, endId);
-        else
-            // interrupts the construction of this ride, leaving time as null
-            System.out.println("Unable to create ride! Passenger was invalid...");
+        // initializes this ride
+        init(id, time, new String[] {passenger}, startId, endId);
     }
 
     /**
@@ -74,7 +70,7 @@ public class Ride implements Comparable<Ride> {
      */
     public Ride(int id, Time time, String[] passengers, int startId, int endId) {
         // initialize this ride if there is at least one and no more than the maximum number of passengers
-        if (!(passengers.length < 1 || passengers.length > MAX_PASSENGERS))
+        if (passengers.length > 0 && passengers.length <= MAX_PASSENGERS)
             init(id, time, passengers, startId, endId);
         else
             // interrupts the construction of this ride, leaving time as null
@@ -92,43 +88,37 @@ public class Ride implements Comparable<Ride> {
     private void init(int id, Time time, String[] passengers, int startId, int endId) {
         // ensures ride id is valid
         if (id <= 0) {
-            System.out.println("Unable to create ride! An invalid ride id was detected...");
+            debug("Unable to create ride! An invalid ride id was detected...", "init");
             return;
         }
 
-        // split times into hh/mm/ss to validate its format
-        int timeSize = time.toString().split(":").length;
-        // ensures time is valid
-        if (timeSize != 3) {
-            System.out.println("Unable to create ride! An invalid time string was passed... \nCorrect 24-hour time Format = ##:##:##");
-            return;
-        }
+        // no need to validate time because this is handled by the Time class w/Time.valueOf(String)
 
         // ensures all passengers are valid
         if (!addPassenger(passengers)) {
-            System.out.println("Unable to create ride! At least one invalid passenger was detected...");
-            passengers = null;
+            debug("Unable to create ride! At least one invalid passenger was detected...", "init");
+            this.passengers = null;
             return;
         }
 
         // ensures start id is valid
         if (startId < 0) {
-            System.out.println("Unable to create ride! An invalid start id was detected...");
+            debug("Unable to create ride! An invalid start id was detected...", "init");
             return;
         }
 
         // ensures end id is valid
         if (endId < 0) {
-            System.out.println("Unable to create ride! An invalid end id was detected");
+            debug("Unable to create ride! An invalid end id was detected", "init");
             return;
         }
 
         // update fields with validated parameters
         this.id = id;
         this.time = time;
-        this.passengers = passengers;
         this.startId = startId;
         this.endId = endId;
+
         // marks this ride as valid
         isValid = true;
     }
@@ -147,11 +137,12 @@ public class Ride implements Comparable<Ride> {
      */
     @Override
     public String toString() {
+        // returns a string containing this rides details neatly formatted
         return String.format("--- Ride %03d -------\n", id) +
                 String.format("Time: %tT\n", time) +
                 String.format("Start ID: %d\n", startId) +
                 String.format("End ID: %d\n", endId) +
-                "Passengers:\n" + fPassengers() +
+                String.format("Passengers:\n%s", fPassengers()) +
                 "--------------------";
     }
 
@@ -187,7 +178,8 @@ public class Ride implements Comparable<Ride> {
 
         // iterates through the passed array adding each passenger
         for (String p : passengers) {
-            if (p == null)
+            // validates name string before processing
+            if (p == null || p.trim().length() == 0)
                 continue;
             // if any processing errors occur
             if (!addPassenger(p)) {
@@ -245,11 +237,12 @@ public class Ride implements Comparable<Ride> {
                     fPassengers.append(passenger.trim()).append("\n");
 
             return fPassengers.toString();
-        }
 
-        // displays error message if no valid passengers were found
-        debug("Error! Failed to format passengers, an invalid passenger string was passed!", "fPassengers");
-        return null;
+        } else {
+            // displays error message if no valid passengers were found
+            debug("Error! Failed to format passengers, an invalid passenger string was passed!", "fPassengers");
+            return "null";
+        }
     }
 
     /**

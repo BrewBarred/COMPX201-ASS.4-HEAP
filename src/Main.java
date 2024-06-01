@@ -6,7 +6,7 @@ public class Main {
         MinHeap heap = new MinHeap();
         HeapPrinter printer = new HeapPrinter();
 
-        Ride ride1 = new Ride(1, Time.valueOf("01:00:00"), new String[] {"p1"}, 1, 2);
+        Ride ride1 = new Ride(1, Time.valueOf(""), new String[] {"p1"}, 1, 2);
         Ride ride2 = new Ride(2, Time.valueOf("02:00:00"), new String[] {"p2"}, 2, 3);
         Ride ride3 = new Ride(3, Time.valueOf("03:00:00"), new String[] {"p3"}, 3, 4);
         Ride ride4 = new Ride(4, Time.valueOf("04:00:00"), new String[] {"p4"}, 4, 5);
@@ -19,17 +19,7 @@ public class Main {
 
         Ride[] rideArray = {null, ride1, null, null, null, ride2, null};
 
-        heap.insert(rideArray);
-//        heap.insert(ride10);
-//        heap.insert(ride1);
-//        heap.insert(ride9);
-//        heap.insert(ride7);
-//        heap.insert(ride8);
-//        heap.insert(ride5);
-//        heap.sort();
 
-        printer.printTime(heap);
-        heap.dump();
 
     }
 
