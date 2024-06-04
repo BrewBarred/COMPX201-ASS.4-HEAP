@@ -207,16 +207,19 @@ public class MinHeap {
      * @return A heapified version of the passed ride array
      */
     public Ride[] heapify(int rideNum, Ride[] rideArray) {
+        if (rideArray == null)
+            return null;
+
         // if the passed ride array length is greater than the max. capacity, reject it and return early
         if (rideArray.length == 0 || rideArray.length > MAX_CAPACITY) {
             debug("Unable to process ride array! An invalid array size was detected... RideCount: " + rideNum + ", Max. Capacity: " + MAX_CAPACITY, "heapify(int rideNum, Ride[] rideArray)");
-            return null;
+            return rideArray;
         }
 
         // if the passed ride number is out of bounds of the array
         if (rideNum < 1 || rideNum >= rideArray.length) {
             debug("Unable to process ride number! An invalid number of rides was detected...", "heapify(int rideNum, Ride[] rideArray)");
-            return null;
+            return rideArray;
         }
 
         // overwrite the default heap with the passed heap
@@ -365,10 +368,8 @@ public class MinHeap {
         // for each ride in the array, compare location id's
         for(Ride ride : rides) {
             // if the ride is null, there must be no rides left to check
-            if (ride == null) {
-                System.out.println("Skipping, ride is null!");
+            if (ride == null)
                 continue;
-            }
 
             // if this ride is not booked within 10 minutes of the passed right, check next ride
             if (getTimeDiff(r, ride) > 10)

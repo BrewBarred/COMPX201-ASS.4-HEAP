@@ -1181,28 +1181,29 @@ public class MinHeapTest {
         assertEquals(expectedRide, actualRide);
     }
 
-// Test section: isEmpty(Ride[])
+// Test section: isEmpty()
 
     /**
-     * Tests to ensure that isEmpty(Ride[]) returns true when the passed array is null
+     * Tests to ensure that isEmpty() returns true when the passed array is null
      */
     @Test
-    @DisplayName("Test isEmpty(Ride[]): Check if a null array is empty, check true")
+    @DisplayName("Test isEmpty(): Check if a null array is empty, check true")
     public void testIsEmptyArrayNull() {
-        // no arrangement needed
+        // set heap to null
+        heap.rides = null;
 
         // check if a null array is empty and collect the result
-        boolean isEmpty = heap.isEmpty((Ride[]) null);
+        boolean isEmpty = heap.isEmpty();
 
         // check empty returns true
         assertTrue(isEmpty);
     }
 
     /**
-     * Tests to ensure that isEmpty(Ride[]) returns true when the passed array is empty
+     * Tests to ensure that isEmpty() returns true when the passed array is empty
      */
     @Test
-    @DisplayName("Test isEmpty(Ride[]): Check if an empty array is empty, check true")
+    @DisplayName("Test isEmpty(): Check if an empty array is empty, check true")
     public void testIsEmptyArrayEmpty() {
         // no need for arrangement since heap is empty by default
 
@@ -1214,10 +1215,10 @@ public class MinHeapTest {
     }
 
     /**
-     * Tests to ensure that isEmpty(Ride[]) returns true when the passed array has a length of 0
+     * Tests to ensure that isEmpty() returns true when the passed array has a length of 0
      */
     @Test
-    @DisplayName("Test isEmpty(Ride[]): Check if array w/size of 0 is empty, check true")
+    @DisplayName("Test isEmpty(): Check if array w/size of 0 is empty, check true")
     public void testIsEmptyArraySize0() {
         // set heap to a size of 0
         heap.rides = new Ride[0];
@@ -1230,10 +1231,10 @@ public class MinHeapTest {
     }
 
     /**
-     * Tests to ensure that isEmpty(Ride[]) returns false when some elements in the passed array are null and some aren't
+     * Tests to ensure that isEmpty() returns false when some elements in the passed array are null and some aren't
      */
     @Test
-    @DisplayName("Test isEmpty(Ride[]): Check if array w/random nulls is empty, check false")
+    @DisplayName("Test isEmpty(): Check if array w/random nulls is empty, check false")
     public void testIsEmptyArrayNulls() {
         // create a ride array w/random nulls
         Ride[] rideArray = {null, null, ride1, null, ride2, null, ride3, null, null, null, ride4};
@@ -1248,104 +1249,35 @@ public class MinHeapTest {
     }
 
     /**
-     * Tests to ensure that isEmpty(Ride[]) returns false when the passed array only contains a single ride
+     * Tests to ensure that isEmpty() returns false when the passed array only contains a single ride
      */
     @Test
-    @DisplayName("Test isEmpty(Ride[]): Check if array w/single ride is empty, check false")
+    @DisplayName("Test isEmpty(): Check if array w/single ride is empty, check false")
     public void testIsEmptyArraySingle() {
+        // using default ride1...
+        heap.insert(ride1);
 
+        // check is single heap is empty and collect result
+        boolean isEmpty = heap.isEmpty();
+
+        // check isEmpty returns false
+        assertFalse(isEmpty);
     }
 
     /**
-     * Tests to ensure that isEmpty(Ride[]) returns false when the passed array contains multiple rides
+     * Tests to ensure that isEmpty() returns false when the passed array contains multiple rides
      */
     @Test
-    @DisplayName("Test isEmpty(Ride[]): Check if array w/multiple rides is empty, check false")
+    @DisplayName("Test isEmpty(): Check if array w/multiple rides is empty, check false")
     public void testIsEmptyArrayMulti() {
+        // using defaultRides array...
+        heap.insert(defaultRides);
 
-    }
+        // check if multi-heap is empty and collect result
+        boolean isEmpty = heap.isEmpty();
 
-// Test section: hasRide(Ride)
-
-    /**
-     * Tests to ensure that hasRide(Ride) returns false when the heap is null
-     */
-    @Test
-    @DisplayName("Test hasRide(Ride): Check null heap for a ride, check false")
-    public void testHasRideHeapNull() {
-
-    }
-
-    /**
-     * Tests to ensure that hasRide(Ride) returns false when the heap is empty
-     */
-    @Test
-    @DisplayName("Test hasRide(Ride): Check empty heap for a ride, check false")
-    public void testHasRideHeapEmpty() {
-
-    }
-
-    /**
-     * Tests to ensure that hasRide(Ride) returns false when the passed ride is null
-     */
-    @Test
-    @DisplayName("Test hasRide(Ride): Check heap for null ride, check false")
-    public void testHasRideNull() {
-
-    }
-
-    /**
-     * Tests to ensure that hasRide(Ride) returns false when the passed ride is not contained within a heap w/single ride
-     */
-    @Test
-    @DisplayName("Test hasRide(Ride): Check single-heap for un-contained ride, check false")
-    public void testHasRideUncontainedSingle() {
-
-    }
-
-    /**
-     * Tests to ensure that hasRide(Ride) returns true when the passed ride is contained with a heap size of 1
-     */
-    @Test
-    @DisplayName("Test hasRide(Ride): Add ride to single heap and check for it, check true")
-    public void testHasRideContainedHeapSingle() {
-
-    }
-
-    /**
-     * Tests to ensure that hasRide(Ride) returns false when the passed ride is not contained within a heap w/multiple rides
-     */
-    @Test
-    @DisplayName("Test hasRide(Ride): Check multi heap for un-contained ride, check false")
-    public void testHasRideUncontainedMulti() {
-
-    }
-
-    /**
-     * Tests to ensure that hasRide(Ride) returns true when the passed ride is contained within a heap w/multiple rides
-     */
-    @Test
-    @DisplayName("Test hasRide(Ride): Check multi heap for contained ride, check true")
-    public void testHasRideContainedMulti() {
-
-    }
-
-    /**
-     * Tests to ensure that hasRide(Ride) returns false when the passed ride is not contained within a full heap
-     */
-    @Test
-    @DisplayName("Test hasRide(Ride): Check full heap for un-contained ride, check false")
-    public void testHasRideUncontainedFull() {
-
-    }
-
-    /**
-     * Tests to ensure that hasRide(Ride) returns true when the passed ride is contained within a full heap
-     */
-    @Test
-    @DisplayName("Test hasRide(Ride): Check full heap for contained ride, check true")
-    public void testHasRideContainedFull() {
-
+        // check isEmpty returns false
+        assertFalse(isEmpty);
     }
 
 // Test section: heapify(int, Ride[])
@@ -1356,7 +1288,16 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test heapify(int, Ride[]): Heapify w/ride num < 1, check error")
     public void testHeapifyRideNumTooLow() {
+        // using defaultRides array...
 
+        // attempt to heapify w/invalid ride num
+        heap.heapify(-1, defaultRides);
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : heapify(int rideNum, Ride[] rideArray)] Unable to process ride number! An invalid number of rides was detected...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -1365,7 +1306,17 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test heapify(int, Ride[]): Heapify w/ride num >= array length")
     public void testHeapifyRideNumTooHigh() {
+        // using defaultRides array...
+        heap.insert(defaultRides);
 
+        // attempt to heapify array w/ride num too high
+        heap.heapify(defaultRides.length + 1, defaultRides);
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : heapify(int rideNum, Ride[] rideArray)] Unable to process ride number! An invalid number of rides was detected...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -1374,15 +1325,30 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test heapify(int, Ride[]): Heapify w/null array, check unchanged")
     public void testHeapifyArrayNull() {
+        // no arrangement needed
 
+        // attempt to heapify null array and store result in the heap array
+        heap.rides = heap.heapify(1, (Ride[]) null);
+        // check heap array remains null
+        boolean isUnchanged = heap.rides == null;
+
+        // check heap array is unchanged
+        assertTrue(isUnchanged);
     }
     /**
-     * Tests to ensure that heapify(int, Ride[]) returns a null Ride[] parameter since it is already heapified
+     * Tests to ensure that heapify(int, Ride[]) returns a null Ride[] since it is already heapified
      */
     @Test
     @DisplayName("Test heapify(int, Ride[]): Heapify w/array of nulls, check unchanged")
     public void testHeapifyArrayNulls() {
+        // create an array of nulls
+        Ride[] rideArray = {null, null, null, null, null};
 
+        // check heapify remains unchanged and collect result
+        boolean isUnchanged = heap.heapify(5, rideArray) == rideArray;
+
+        // check arrays match
+        assertTrue(isUnchanged);
     }
 
     /**
