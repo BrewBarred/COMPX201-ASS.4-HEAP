@@ -14,15 +14,15 @@ public class MinHeap {
      */
     public int next;
     /**
-     * The number of vehicles (rides) that the company has available (i.e., the size of the heap, this is set to 21 to allow for 20 rides, since index 0 is not used
-     */
-    public final int MAX_CAPACITY = 21;
-    /**
      * ~ FOR DEVELOPER USE ONLY! ~ <br><br>
      *
      * True if debugging mode should be enabled, else false
      */
-    private final boolean DEBUGGING = false;
+    private boolean isDebugging = false;
+    /**
+     * The number of vehicles (rides) that the company has available (i.e., the size of the heap, this is set to 21 to allow for 20 rides, since index 0 is not used
+     */
+    public final int MAX_CAPACITY = 21;
 
     /**
      * Constructs a new minimum heap object and points to the first ride slot by default
@@ -82,19 +82,23 @@ public class MinHeap {
         if (r == null)
             return false;
 
+        // prevents rides that were unsuccessfully initialized from being added to the heap
+        if (!r.isValid) {
+            debug("Unable to insert ride! Ride was invalid...", "insert(Ride r)");
+            return false;
+        }
+
         // if maximum capacity has been reached, the passed ride cannot be added
         if (next >= MAX_CAPACITY) {
-            debug("Unable to insert the passed ride! Maximum ride limit has been reached...", "Insert(Ride r)");
+            debug("Unable to insert the passed ride! Maximum ride limit has been reached...", "insert(Ride r)");
             return false;
         }
 
         // prevents duplicate rides being added to the heap
-        if (hasRide(r) || !isUniqueId(r)) {
-            debug("Unable to insert ride! Ride was already contained in the array...", "Insert(Ride r)");
+        if (hasRide(r) || isUniqueId(r) == false) {
+            debug("Unable to insert ride! Ride was already contained in the array...", "insert(Ride r)");
             return false;
         }
-
-        debug("Attempting to insert ride... \n " + r, "Insert(Ride r)");
 
         // if this ride in not optimizable, add it to the array
         if (isOptimizable(r)) {
@@ -117,7 +121,6 @@ public class MinHeap {
      * @return A boolean value that is true if the ride was successfully removed from the heap, else returns false
      */
     public boolean remove(Ride r) {
-        debug("Attempting to remove ride...", "remove");
         if (r == null || rides == null)
             return false;
 
@@ -163,7 +166,7 @@ public class MinHeap {
      */
     public boolean isEmpty(Ride[] rides) {
         // if the passed array has a length of zero it cannot contain any elements
-        if (rides.length == 0)
+        if (rides == null || rides.length == 0)
             return true;
         
         // else iterates through each element in the heap
@@ -285,6 +288,13 @@ public class MinHeap {
     }
 
     /**
+     * Toggles debug mode on/off to display debug messages to the console
+     */
+    public void toggleDebug() {
+        isDebugging = !isDebugging;
+    }
+
+    /**
      * Performs the up heap operation on the passed heap starting from the last leaf node and continuing up the min heap until it finds a smaller parent value
      */
     private void upHeap() {
@@ -348,7 +358,6 @@ public class MinHeap {
      * @return A boolean value that is true if the ride was successfully optimized,
      */
     private boolean isOptimizable(Ride r) {
-        debug("Attempting to optimize...", "isOptimizable(Ride r)");
         // if this heap is empty, it is not possible to optimize the passed ride - return early
         if (isEmpty())
             return false;
@@ -471,7 +480,7 @@ public class MinHeap {
 
         // sets pointers at each end of the heap
         int left = 1;
-        int right = getRideCount();
+        int right = next - 1;
 
         // moves pointers inward until they intersect, returning true if the passed ride is found by either pointer
         for (; left <= right; left++, right--)
@@ -576,7 +585,7 @@ public class MinHeap {
      * @param function The name of the function in which the debugging message is executed
      */
     private void debug(String msg, String function) {
-        if (DEBUGGING)
+        if (isDebugging)
             System.out.println(String.format("[MinHeap : %s] %s", function, msg));
     }
 

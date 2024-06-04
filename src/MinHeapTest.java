@@ -1,5 +1,5 @@
-import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.sql.Time;
@@ -69,6 +69,18 @@ public class MinHeapTest {
 
         // adds the default rides to the default ride array
         defaultRides = new Ride[] {ride1, ride2, ride3, ride4};
+
+        // enables debug mode to retrieve debug error messages
+        heap.toggleDebug();
+    }
+
+    /**
+     * Disables debugging mode after each test to ensure it is not enabled once the test has finished running
+     */
+    @AfterEach
+    public void disableDebug() {
+        // disables debug mode to revert min heap class to default
+        heap.toggleDebug();
     }
 
 // Test class: Ride.java
@@ -196,11 +208,17 @@ public class MinHeapTest {
         // using default invalidRide1...
 
         // define expected and actual outputs
-        String expectedOutput = "";
+        String expectedOutput =
+                "--- Ride 000 -------\n" +
+                "Time: null\n" +
+                "Start ID: 0\n" +
+                "End ID: 0\n" +
+                "Passengers:\n" +
+                "--------------------";
         String actualOutput = invalidRide1.toString();
 
         // check outputs match
-        //assertEquals()
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -237,11 +255,10 @@ public class MinHeapTest {
     @Order(1)
     @DisplayName("Test insert(Ride[]): Insert an array that is null")
     public void testInsertArrayNull() {
-        // arrange the test with an array set to null
-        Ride[] rides = null;
+        // no need for arrangement
 
         // attempt to insert the null array
-        heap.insert(rides);
+        heap.insert((Ride[]) null);
         String expectedOutput = "Unable to add ride array! The passed ride array was null..";
         String actualOutput = getStream();
 
@@ -413,7 +430,15 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert a null ride, check pointer")
     public void testInsertNullPointer() {
+        // no need for arrangement
 
+        // insert the null ride
+        heap.insert((Ride) null);
+        // true if the ride was rejected, false if the ride was inserted
+        boolean isPointerUnchanged = heap.next == 1;
+
+        // check rejection is true
+        assertTrue(isPointerUnchanged);
     }
 
     /**
@@ -422,16 +447,33 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert a non-null ride, check pointer")
     public void testInsertNonNullPointer() {
+        // using default ride1...
 
+        // insert a non-null ride
+        heap.insert(ride1);
+        // check if pointer has moved
+        boolean isPointerChanged = heap.next == 2;
+
+        assertTrue(isPointerChanged);
     }
 
     /**
      * Tests to ensure that the insert(Ride) method rejects duplicate rides
      */
     @Test
-    @DisplayName("Test insert(Ride): Insert a dupe ride, check error")
+    @DisplayName("Test insert(Ride): Insert a dupe ride, check index 2")
     public void testInsertRideDupe() {
+        // replicate default ride 1
+        Ride rideDupe = ride1;
 
+        // insert duplicate rides
+        heap.insert(ride1);
+        heap.insert(rideDupe);
+        // ensure both rides were not added by ensuring index 2 is still null
+        boolean isDuped = heap.rides[2] == null;
+
+        // check index 2 is still null
+        assertTrue(isDuped);
     }
 
     /**
@@ -440,7 +482,17 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert a dupe ride, check pointer is unchanged")
     public void testInsertRideDupePointer() {
+        // using default ride1 and...
+        Ride rideDupe = ride1;
 
+        // insert duplicate rides
+        heap.insert(ride1);
+        heap.insert(rideDupe);
+        // ensure pointer is still pointing at 2nd index since only one ride should have been added
+        boolean isPointerUnchanged = heap.next == 2;
+
+        // check pointer is correct
+        assertTrue(isPointerUnchanged);
     }
 
     /**
@@ -449,7 +501,18 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert ride with duplicate ride id, check error")
     public void testInsertRideDupeId() {
+        // using default ride1 and...
+        Ride rideDupeId = new Ride(ride1.id, Time.valueOf("5:0:0"), "Eli", 1, 1);
 
+        // insert rides w/same ID
+        heap.insert(ride1);
+        heap.insert(rideDupeId);
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : insert(Ride r)] Unable to insert ride! Ride was already contained in the array...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -458,7 +521,17 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert a ride with id < 1, check error")
     public void testInsertRideIdBelowOne() {
+        // create a ride with an id below 1
+        Ride rideInvalidId = new Ride(0, Time.valueOf("1:1:1"), "Aaron", 1, 1);
 
+        // insert the invalid ride
+        heap.insert(rideInvalidId);
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : insert(Ride r)] Unable to insert ride! Ride was invalid...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -467,16 +540,26 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert a ride with id > 0, check true")
     public void testInsertRideIdAboveZero() {
+        // using default ride1...
 
+        // attempt to insert a ride with a valid id and collect its result
+        boolean isInserted = heap.insert(ride1);
+
+        // check for successful insertion
+        assertTrue(isInserted);
     }
 
     /**
      * Tests to ensure that the insert(Ride) method rejects empty time strings
      */
     @Test
-    @DisplayName("Test insert(Ride): Insert a ride with empty time string, check error")
+    @DisplayName("Test insert(Ride): Insert a ride with empty time string, check index 1 is null")
+    @SuppressWarnings("unused")
     public void testInsertRideTimeEmpty() {
-
+        // check that a ride w/empty time string throws an illegal argument exception
+        assertThrows(IllegalArgumentException.class, () -> {
+                    Ride rideInvalidTime = new Ride(420, Time.valueOf(""), "Jameson", 1, 1);
+        });
     }
 
     /**
@@ -484,8 +567,12 @@ public class MinHeapTest {
      */
     @Test
     @DisplayName("Test insert(Ride): Insert a ride with an invalid time format, check error")
+    @SuppressWarnings("unused")
     public void testInsertRideTimeInvalid() {
-        
+        // check that a ride w/invalid time string throws an illegal argument exception
+        assertThrows(IllegalArgumentException.class, () -> {
+            Ride rideInvalidTime = new Ride(420, Time.valueOf("2:2"), "Jameson", 1, 1);
+        });
     }
 
     /**
@@ -494,7 +581,13 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert a ride with a valid time format, check true")
     public void testInsertRideTimeValid() {
+        // using default ride1...
 
+        // insert a ride w/valid time string
+        boolean isInserted = heap.insert(ride1);
+
+        // check successful insertion
+        assertTrue(isInserted);
     }
 
     /**
@@ -503,7 +596,17 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert a ride with a null passenger array, check error")
     public void testInsertRidePassNull() {
+        // no need for arrangement
 
+        // create a ride using the null passenger array
+        Ride rideNull = new Ride(69, Time.valueOf("1:1:1"), (String[]) null, 1, 1);
+        heap.insert(rideNull);
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : insert(Ride r)] Unable to insert ride! Ride was invalid...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -512,7 +615,17 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert a ride w/empty passenger string, check error")
     public void testInsertRidePassEmpty() {
+        // creates a ride with an empty passenger string
+        Ride rideEmptyPassengers = new Ride(100, Time.valueOf("04:20:00"), "", 1, 1);
 
+        // insert ride with empty passenger string
+        heap.insert(rideEmptyPassengers);
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : insert(Ride r)] Unable to insert ride! Ride was invalid...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -521,7 +634,17 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert a ride w/blank passenger string, check error")
     public void testInsertRidePassBlank() {
+        // creates a ride with a blank passenger string
+        Ride rideEmptyPassengers = new Ride(100, Time.valueOf("04:20:00"), "    ", 1, 1);
 
+        // insert ride with blank passenger string
+        heap.insert(rideEmptyPassengers);
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : insert(Ride r)] Unable to insert ride! Ride was invalid...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -530,7 +653,19 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert ride w/empty pass array, check error")
     public void testInsertRidePassArrayEmpty() {
+        // creates an empty passenger array
+        String[] passengersEmpty = { };
+        // creates a ride with an empty passenger array
+        Ride rideEmptyPassengers = new Ride(100, Time.valueOf("04:20:00"), passengersEmpty, 1, 1);
 
+        // insert ride with an empty passenger array
+        heap.insert(rideEmptyPassengers);
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : insert(Ride r)] Unable to insert ride! Ride was invalid...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -539,7 +674,19 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert ride w/too many pass, check error")
     public void testInsertRidePassArrayTooMany() {
+        // create a passenger array w/too many passengers
+        String[] passengers = {"Bob", "Marley", "Ziggy", "Stephen", "Smoke", "Mary", "Jane"};
+        // create a ride w/too many passengers
+        Ride rideTooFull = new Ride(100, Time.valueOf("04:20:00"), passengers, 1, 1);
 
+        // insert the ride w/too many passengers
+        heap.insert(rideTooFull);
+        // defines expected and actual outputs
+        String expectedOutput = "[MinHeap : insert(Ride r)] Unable to insert ride! Ride was invalid...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -548,7 +695,14 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert ride w/single pass array, check true")
     public void testInsertRidePassArraySingle() {
+        // creates a ride w/single passenger
+        Ride rideSingle = new Ride(10, Time.valueOf("6:5:4"), "Martha Stewart", 2, 3);
 
+        // insert ride w/single passenger and collect result
+        boolean isInserted = heap.insert(rideSingle);
+
+        // check insertion is true
+        assertTrue(isInserted);
     }
 
     /**
@@ -557,7 +711,16 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert ride w/multi pass array, check true")
     public void testInsertRidePassArrayMulti() {
+        // creates a passenger array w/multiple passengers
+        String[] passengers = {"Martha", "Stewart", "Sucks", "Derek"};
+        // creates a ride w/multiple passengers
+        Ride rideMulti = new Ride(10, Time.valueOf("6:5:4"), passengers, 2, 3);
 
+        // insert ride w/multiple passengers and collect result
+        boolean isInserted = heap.insert(rideMulti);
+
+        // check insertion is true
+        assertTrue(isInserted);
     }
 
     /**
@@ -566,7 +729,19 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert ride w/multi comma sep. string, check error")
     public void testInsertRidePassTooMany() {
+        // creates a string of multiple passengers separated w/commas
+        String passengers = "Donald, Trump, Bic, Boy";
+        // creates a ride w/comma separated passenger string
+        Ride rideMultiComma = new Ride(999, Time.valueOf("6:59:59"), passengers, 6, 6);
 
+        // inserts the invalid ride
+        heap.insert(rideMultiComma);
+        // defines the expected and actual outputs
+        String expectedOutput = "[MinHeap : insert(Ride r)] Unable to insert ride! Ride was invalid...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -575,88 +750,156 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert ride w/single pass string, check true")
     public void testInsertRidePassSingle() {
+        // creates a ride w/single passenger string
+        Ride rideSingle = new Ride(40, Time.valueOf("0:0:1"), "Jesus Christ", 1, 6);
 
+        // insert the valid single ride and collect the result
+        boolean isInserted = heap.insert(rideSingle);
+
+        // check insertion is true
+        assertTrue(isInserted);
     }
 
     /**
      * Tests to ensure that the insert(Ride) method rejects rides with a start location value less than or equal to 0
      */
     @Test
-    @DisplayName("Test insert(Ride): Insert ride w/start id <= 0, check error")
+    @DisplayName("Test insert(Ride): Insert ride w/start id < 0, check error")
     public void testInsertRideStartInvalid() {
+        // creates a ride w/start id less than 0
+        Ride rideInvalidStart = new Ride(12, Time.valueOf("0:0:1"), "Jesus", -1, 6);
 
+        // inserts the ride w/invalid start id
+        heap.insert(rideInvalidStart);
+        // defines expected and actual outputs
+        String expectedOutput = "[MinHeap : insert(Ride r)] Unable to insert ride! Ride was invalid...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
      * Tests to ensure that the insert(Ride) method rejects rides with an end location value less than or equal to 0
      */
     @Test
-    @DisplayName("Test insert(Ride): Insert ride w/end id <= 0, check error")
+    @DisplayName("Test insert(Ride): Insert ride w/end id < 0, check error")
     public void testInsertRideEndInvalid() {
+        // creates a ride w/end id less than 0
+        Ride rideInvalidEnd = new Ride(12, Time.valueOf("0:0:1"), "Jesus",8, -10);
 
+        // inserts the ride w/invalid end id
+        heap.insert(rideInvalidEnd);
+        // defines expected and actual outputs
+        String expectedOutput = "[MinHeap : insert(Ride r)] Unable to insert ride! Ride was invalid...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
      * Tests to ensure that the insert(Ride) method accepts rides with a start id and end id that is greater than 0
      */
     @Test
-    @DisplayName("Test insert(Ride): Insert ride w/valid location ids")
+    @DisplayName("Test insert(Ride): Insert ride w/valid location ids, check true")
     public void testInsertRideLocationValid() {
+        // creates a ride w/valid location ids
+        Ride rideValidLocation = new Ride(55, Time.valueOf("3:6:3"), "Gina", 50,192);
 
+        // inserts valid ride and collects result
+        boolean isInserted = heap.insert(rideValidLocation);
+
+        // check insertion is true
+        assertTrue(isInserted);
     }
 
     /**
-     * Tests to ensure that the insert(Ride) method fails to optimize rides with a time difference that is greater than 10 minutes
+     * Tests to ensure that the insert(Ride) method fails to optimize
+     * rides with a time difference that is greater than 10 minutes
      */
     @Test
-    @DisplayName("Test insert(Ride): Insert a ride w/time diff > 10, check heap length")
+    @DisplayName("Test insert(Ride): Insert two rides w/time diff > 10, check pointer")
     public void testInsertRideInvalidTime() {
+        // creates two rides greater than 10 minutes apart
+        Ride ride1 = new Ride(40, Time.valueOf("12:00:00"), "Riley", 42, 0);
+        Ride ride2 = new Ride(20, Time.valueOf("12:11:00"), "Christopher Robins", 42, 0);
 
+        // insert rides w/greater than 10 minutes time diff
+        heap.insert(ride1);
+        heap.insert(ride2);
+        // define expected and actual pointer values
+        int expectedPointer = 3;
+        int actualPointer = heap.next;
+
+        // check pointer
+        assertEquals(expectedPointer, actualPointer);
     }
 
-    /**
-     * Tests to ensure that the insert(Ride) method fails to optimize rides with a time difference of 10 minutes or less, valid end id, but an invalid start id
-     */
-    @Test
-    @DisplayName("Test insert(Ride): Insert a ride w/invalid start id, check heap length")
-    public void testInsertRideInvalidStart() {
-
-    }
 
     /**
-     * Tests to ensure that the insert(Ride) method fails to optimize rides with a time difference of 10 minutes or less, valid start id, but an invalid end id
+     * Tests to ensure that the insert(Ride) method fails to optimize rides with a time
+     * difference of 10 minutes or less, matching start ids, but an un-matching end ids
      */
     @Test
-    @DisplayName("Test insert(Ride): Insert a ride w/invalid end id")
+    @DisplayName("Test insert(Ride): Insert two rides w/o matching end ids, check pointer")
     public void testInsertRideInvalidEnd() {
+        // creates two rides greater than 10 minutes apart
+        Ride ride1 = new Ride(110, Time.valueOf("12:00:00"), "Lionel", 420, 500);
+        Ride ride2 = new Ride(103, Time.valueOf("12:01:00"), "Richie", 420, 13);
 
+        // insert rides w/greater than 10 minutes time diff
+        heap.insert(ride1);
+        heap.insert(ride2);
+        // define expected and actual pointer values
+        int expectedPointer = 3;
+        int actualPointer = heap.next;
+
+        // check pointer
+        assertEquals(expectedPointer, actualPointer);
     }
 
     /**
-     * Tests to ensure that the insert(Ride) method fails to optimize rides with a time difference of 10 minutes or less, but invalid start and end ids
+     * Tests to ensure that the insert(Ride) method fails to optimize rides with a time
+     * difference of 10 minutes or less, matching end ids, but un-matching start ids
      */
     @Test
     @DisplayName("Test insert(Ride): Insert ride w/invalid start and end ids, check insertion")
     public void testInsertRideInvalidLocation() {
+        // creates two rides greater than 10 minutes apart
+        Ride ride1 = new Ride(110, Time.valueOf("12:00:00"), "Lionel", 4201, 13);
+        Ride ride2 = new Ride(103, Time.valueOf("12:01:00"), "Richie", 3422, 13);
 
+        // insert rides w/greater than 10 minutes time diff
+        heap.insert(ride1);
+        heap.insert(ride2);
+        // define expected and actual pointer values
+        int expectedPointer = 3;
+        int actualPointer = heap.next;
+
+        // check pointer
+        assertEquals(expectedPointer, actualPointer);
     }
 
     /**
-     * Tests to ensure that the insert(Ride) method fails to optimize rides with an invalid time but valid location id's
+     * Tests to ensure that the insert(Ride) method successfully optimizes a pair of valid rides in the array
      */
     @Test
-    @DisplayName("Test insert(Ride): Insert a ride w/invalid time AND location, check insertion")
-    public void testInsertRideInvalidTimeLocation() {
-
-    }
-
-    /**
-     * Tests to ensure that the insert(Ride) method successfully optimizes a pair of rides in the array
-     */
-    @Test
-    @DisplayName("Test insert(Ride): Insert a pair of optimizable rides, check insertion")
+    @DisplayName("Test insert(Ride): Insert a pair of optimizable rides, check pointer")
     public void testInsertRideOptimizePair() {
+        // creates two rides greater than 10 minutes apart
+        Ride ride1 = new Ride(11, Time.valueOf("12:00:00"), "Ronaldo", 420, 500);
+        Ride ride2 = new Ride(10, Time.valueOf("12:05:00"), "Christiano", 420, 500);
 
+        // insert rides w/greater than 10 minutes time diff
+        heap.insert(ride1);
+        heap.insert(ride2);
+        // define expected and actual pointer values
+        int expectedPointer = 2;
+        int actualPointer = heap.next;
+
+        // check pointer
+        assertEquals(expectedPointer, actualPointer);
     }
 
     /**
@@ -665,7 +908,21 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert a few optimizable rides, check insertion")
     public void testInsertRideOptimizeMulti() {
+        // create multiple optimizable rides w/valid total number of passengers
+        Ride ride1 = new Ride(1145, Time.valueOf("12:00:00"), "Ronald", 420, 500);
+        Ride ride2 = new Ride(2345, Time.valueOf("12:03:15"), "McDonald", 420, 500);
+        Ride ride3 = new Ride(1234, Time.valueOf("12:00:00"), "King", 420, 500);
+        // create a ride array for easier insertion
+        Ride[] rideArray = {ride1, ride2, ride3};
 
+        // insert optimizable rides
+        heap.insert(rideArray);
+        // define expected and actual pointer values
+        int expectedPointer = 2;
+        int actualPointer = heap.next;
+
+        // check pointer
+        assertEquals(expectedPointer, actualPointer);
     }
 
     /**
@@ -675,25 +932,63 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert a few optimizable rides w/too many total pass, check insertion")
     public void testInsertRideOptimizeTooManyPass() {
+        // create passenger arrays totalling to too many passengers
+        String[] passengers1to4 = {"p1", "p2", "p3", "p4"};
+        String[] passengers5to8 = {"p5", "p6", "p7", "p8"};
+        // create multiple optimizable rides w/valid total number of passengers
+        Ride ride1 = new Ride(1145, Time.valueOf("12:00:00"), passengers1to4, 420, 500);
+        Ride ride2 = new Ride(2345, Time.valueOf("12:03:15"), passengers5to8, 420, 500);
+        // create a ride array for easier insertion
+        Ride[] rideArray = {ride1, ride2};
 
+        // insert optimizable rides
+        heap.insert(rideArray);
+        // define expected and actual pointer values (3 since rides are un-optimizable and added separately)
+        int expectedPointer = 3;
+        int actualPointer = heap.next;
+
+        // check pointer
+        assertEquals(expectedPointer, actualPointer);
     }
 
     /**
      * Tests to ensure that the insert(Ride) method successfully up-heaps after an optimizable insertion
      */
     @Test
-    @DisplayName("Test insert(Ride): Insert a optimizable ride, check up-heap")
+    @DisplayName("Test insert(Ride): Insert an optimizable ride, check time @ index1")
     public void testInsertRideOptimizeUpHeap() {
+        // creates a pair of optimizable rides
+        Ride ride1 = new Ride(1145, Time.valueOf("14:10:00"), "p1", 435, 4);
+        Ride ride2 = new Ride(1147, Time.valueOf("10:10:10"), "p2", 420, 500);
+        Ride ride3 = new Ride(2345, Time.valueOf("10:15:15"), "p3", 420, 500);
 
+        // insert optimizable rides
+        heap.insert(ride1);
+        heap.insert(ride2);
+        heap.insert(ride3);
+        // define expected ride at index 1
+        String expectedTime = "10:15:15";
+        String actualTime = heap.rides[1].getTime();
+
+        // check times match
+        assertEquals(expectedTime, actualTime);
     }
 
     /**
-     * Tests to ensure that the insert(Ride) method successfully inserts a valid but non-optimizable ride individually
+     * Tests to ensure that the insert(Ride) method successfully inserts a pair of valid but non-optimizable rides individually
      */
     @Test
-    @DisplayName("Test insert(Ride): Insert a non-optimizable ride, check insertion")
+    @DisplayName("Test insert(Ride): Insert two non-optimizable rides, check insertion")
     public void testInsertRideNotOptimizable() {
+        // create a valid, non-optimizable ride
+        Ride ride1 = new Ride(4, Time.valueOf("03:06:09"), "p1", 9, 10);
+        Ride ride2 = new Ride(10, Time.valueOf("10:10:10"), "p2", 90, 100);
 
+        // insert the valid non-optimizable rides and collect the result
+        boolean isInserted = heap.insert(ride1) && heap.insert(ride2);
+
+        // check insertions are true
+        assertTrue(isInserted);
     }
 
     /**
@@ -702,7 +997,17 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert a non-optimizable ride, check up-heap")
     public void testInsertRideNotOptimizableUpHeap() {
+        // using default rides 1 and 2...
 
+        // insert valid, non-optimizable rides
+        heap.insert(ride2);
+        heap.insert(ride1);
+        // define expected and actual time at index 1
+        String expectedTime = ride1.getTime();
+        String actualTime = heap.rides[1].getTime();
+
+        // check times match
+        assertEquals(expectedTime, actualTime);
     }
 
     /**
@@ -711,45 +1016,92 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test insert(Ride): Insert 3 values in staggered order, check index")
     public void testInsertRide() {
+        // using default rides 1, 2 and 3...
 
+        // create a ride array for easier insertion
+        Ride[] rideArray = {ride2, ride1, ride3};
+
+        // insert rides
+        heap.insert(rideArray);
+        // define expected and actual time at index 1
+        String expectedTime = ride1.getTime();
+        String actualTime = heap.rides[1].getTime();
+
+        // check times match
+        assertEquals(expectedTime, actualTime);
     }
 
 // Test section: remove(Ride)
 
     /**
-     * Tests to ensure that remove(Ride) a null parameter
+     * Tests to ensure that remove(Ride) fails to remove when passed a null parameter
      */
     @Test
-    @DisplayName("Test remove(Ride): Attempt to remove null, check boolean result")
+    @DisplayName("Test remove(Ride): Attempt to remove null, check false")
     public void testRemoveRideNull() {
+        // no need for arrangement
 
+        // attempt to remove null ride and collect result
+        boolean isRemoved = heap.remove(null);
+
+        // check removal is unsuccessful
+        assertFalse(isRemoved);
     }
 
     /**
-     * Tests to ensure that remove(Ride) returns false when the heap is null
+     * Tests to ensure that remove(Ride) returns false when the heap array is null
      */
     @Test
-    @DisplayName("Test remove(Ride): Remove a ride from a null heap, check false")
+    @DisplayName("Test remove(Ride): Remove a ride from a null heap array, check false")
     public void testRemoveRideNullHeap() {
+        // using default ride1...
+        heap.insert(ride1);
 
+        // set heap array to null
+        heap.rides = null;
+        // attempt to remove a ride from a null heap array and collect result
+        boolean isRemoved = heap.remove(ride1);
+
+        // check error message
+        assertFalse(isRemoved);
     }
 
     /**
      * Tests to ensure that remove(Ride) returns false when the passed ride is not contained in the heap
      */
     @Test
-    @DisplayName("Test remove(Ride): Remove an un-contained ride, check false")
+    @DisplayName("Test remove(Ride): Remove an un-contained ride, check error")
     public void testRemoveRideNotContained() {
+        // using default ride1...
 
+        // attempt to remove the ride without inserting it and collect result
+        heap.remove(ride1);
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : remove(Ride r)] Unable to remove the passed ride! Ride was not contained in the heap...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
      * Tests to ensure that remove(Ride) targets the correct index
      */
     @Test
-    @DisplayName("Test remove(Ride): Remove contained ride, check value at old index")
+    @DisplayName("Test remove(Ride): Remove contained ride, check ride at old index")
     public void testRemoveRideIndex() {
+        // insert ride array
+        heap.insert(defaultRides);
+        // using default rideArray...
 
+        // remove ride3 at index 3
+        heap.remove(ride3);
+        //define expected and actual ride at index 3 after removal
+        Ride expectedRide = ride4;
+        Ride actualRide = heap.rides[3];
+
+        // check ride at index 3
+        assertEquals(expectedRide, actualRide);
     }
 
     /**
@@ -758,7 +1110,18 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test remove(Ride): Remove contained ride, check pointer")
     public void testRemoveRidePointer() {
+        // insert ride array
+        heap.insert(defaultRides);
+        // using default rideArray...
 
+        // remove ride2 at index 2
+        heap.remove(ride2);
+        //define expected and actual next index pointer values
+        int expectedPointer = 4;
+        int actualPointer = heap.next;
+
+        // check pointer value
+        assertEquals(expectedPointer, actualPointer);
     }
 
     /**
@@ -767,8 +1130,17 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test remove(Ride): Remove root node, check root")
     public void testRemoveRideRoot() {
-        // set heap to match pre-constructed default array
+        // using defaultRides array...
+        heap.insert(defaultRides);
 
+        // remove root ride
+        heap.remove(defaultRides[0]);
+        // define expected and actual rides at root node
+        Ride expectedRide = defaultRides[1];
+        Ride actualRide = heap.rides[1];
+
+        // check root value
+        assertEquals(expectedRide, actualRide);
     }
 
     /**
@@ -777,8 +1149,17 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test remove(Ride): Remove last leaf node, check last leaf node")
     public void testRemoveRideLastLeaf() {
-        // set heap to match pre-constructed default array
+        // using defaultRides array...
+        heap.insert(defaultRides);
 
+        // remove last leaf node
+        heap.remove(defaultRides[3]);
+        // define expected and actual ride as the last leaf node
+        Ride expectedRide = defaultRides[2];
+        Ride actualRide = heap.rides[heap.next - 1];
+
+        // check last leaf node
+        assertEquals(expectedRide, actualRide);
     }
 
     /**
@@ -787,21 +1168,17 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test remove(Ride): Remove a value in the middle of the heap, check index")
     public void testRemoveRideMiddle() {
-        // set heap to match pre-constructed default array
+        // using defaultRides array...
+        heap.insert(defaultRides);
 
-    }
+        // remove a ride from the middle of the heap
+        heap.remove(ride2);
+        // define expected and actual rides
+        Ride expectedRide = ride4;
+        Ride actualRide = heap.rides[2];
 
-    /**
-     * Tests to ensure that remove(Ride) down-heaps after a removal
-     */
-    @Test
-    @DisplayName("Test remove(Ride): Remove a ride, check heap order")
-    public void testRemoveRide() {
-        // set heap to match pre-constructed default array
-
-        // remove a value from the heap
-        // define expected output
-
+        // check last leaf node
+        assertEquals(expectedRide, actualRide);
     }
 
 // Test section: isEmpty(Ride[])
@@ -812,7 +1189,13 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test isEmpty(Ride[]): Check if a null array is empty, check true")
     public void testIsEmptyArrayNull() {
+        // no arrangement needed
 
+        // check if a null array is empty and collect the result
+        boolean isEmpty = heap.isEmpty((Ride[]) null);
+
+        // check empty returns true
+        assertTrue(isEmpty);
     }
 
     /**
@@ -821,7 +1204,13 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test isEmpty(Ride[]): Check if an empty array is empty, check true")
     public void testIsEmptyArrayEmpty() {
+        // no need for arrangement since heap is empty by default
 
+        // checks if empty heap is empty and collects result
+        boolean isEmpty = heap.isEmpty();
+
+        // checks isEmpty returns true
+        assertTrue(isEmpty);
     }
 
     /**
@@ -830,16 +1219,32 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test isEmpty(Ride[]): Check if array w/size of 0 is empty, check true")
     public void testIsEmptyArraySize0() {
+        // set heap to a size of 0
+        heap.rides = new Ride[0];
 
+        // check if heap w/size of 0 returns empty and collect the result
+        boolean isEmpty = heap.isEmpty();
+
+        // check isEmpty returns true
+        assertTrue(isEmpty);
     }
 
     /**
-     * Tests to ensure that isEmpty(Ride[]) returns true when all elements in the passed array are null
+     * Tests to ensure that isEmpty(Ride[]) returns false when some elements in the passed array are null and some aren't
      */
     @Test
-    @DisplayName("Test isEmpty(Ride[]): Check if array of nulls is empty, check true")
+    @DisplayName("Test isEmpty(Ride[]): Check if array w/random nulls is empty, check false")
     public void testIsEmptyArrayNulls() {
+        // create a ride array w/random nulls
+        Ride[] rideArray = {null, null, ride1, null, ride2, null, ride3, null, null, null, ride4};
+        // set heap to match random null ride array
+        heap.rides = rideArray;
 
+        // check if random null array returns empty and collect result
+        boolean isEmpty = heap.isEmpty();
+
+        // check isEmpty returns false
+        assertFalse(isEmpty);
     }
 
     /**

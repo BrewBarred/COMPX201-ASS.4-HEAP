@@ -1,17 +1,9 @@
-import java.awt.*;
 import java.sql.Time;
-import java.util.Arrays;
 
 /**
  * Constructs a new Ride object used to store the information of each riders request in the ride-share app
  */
 public class Ride implements Comparable<Ride> {
-    /**
-     * ~ FOR DEVELOPER USE ONLY! ~<br><br>
-     *
-     * True if debugging mode should be enabled, else false
-     */
-    private final boolean DEBUGGING = false;
     /**
      * The maximum number of passengers per vehicle
      */
@@ -46,6 +38,12 @@ public class Ride implements Comparable<Ride> {
      * The total number of passengers in this ride and also acts as a pointer to the next index in the passenger list
      */
     private int pCount = 0;
+    /**
+     * ~ FOR DEVELOPER USE ONLY! ~<br><br>
+     *
+     * True if debugging mode should be enabled, else false
+     */
+    private boolean isDebugging = false;
 
     /**
      * Constructs a new Ride object to store the information of a ride request
@@ -69,58 +67,8 @@ public class Ride implements Comparable<Ride> {
      * @param endId The end location ID
      */
     public Ride(int id, Time time, String[] passengers, int startId, int endId) {
-        // initialize this ride if there is at least one and no more than the maximum number of passengers
-        if (passengers.length > 0 && passengers.length <= MAX_PASSENGERS)
-            init(id, time, passengers, startId, endId);
-        else
-            // interrupts the construction of this ride, leaving time as null
-            System.out.println("Unable to create ride! One or more passengers were invalid...");
-    }
-
-    /**
-     * Initializes a ride object or nullifies it based on the validity of the passed parameters
-     * @param id The ride id for this ride
-     * @param time The timestamp for this ride
-     * @param passengers The passengers for this ride
-     * @param startId The start location id for this ride
-     * @param endId The end location id for this ride
-     */
-    private void init(int id, Time time, String[] passengers, int startId, int endId) {
-        // ensures ride id is valid
-        if (id <= 0) {
-            debug("Unable to create ride! An invalid ride id was detected...", "init");
-            return;
-        }
-
-        // no need to validate time because this is handled by the Time class w/Time.valueOf(String)
-
-        // ensures all passengers are valid
-        if (!addPassenger(passengers)) {
-            debug("Unable to create ride! At least one invalid passenger was detected...", "init");
-            this.passengers = null;
-            return;
-        }
-
-        // ensures start id is valid
-        if (startId < 0) {
-            debug("Unable to create ride! An invalid start id was detected...", "init");
-            return;
-        }
-
-        // ensures end id is valid
-        if (endId < 0) {
-            debug("Unable to create ride! An invalid end id was detected", "init");
-            return;
-        }
-
-        // update fields with validated parameters
-        this.id = id;
-        this.time = time;
-        this.startId = startId;
-        this.endId = endId;
-
-        // marks this ride as valid
-        isValid = true;
+        // initialize this ride
+        init(id, time, passengers, startId, endId);
     }
 
     /**
@@ -170,8 +118,10 @@ public class Ride implements Comparable<Ride> {
      */
     public boolean addPassenger(String[] passengers) {
         // if string is null or empty, do not add a passenger
-        if (passengers == null || passengers.length == 0)
+        if (passengers == null || passengers.length == 0) {
+            debug("Unable to add passengers! One or more passenger was invalid...","addPassenger(String[] passengers)");
             return false;
+        }
 
         // temporarily stores the current passenger list in case of any processing errors
         String[] temp = this.passengers;
@@ -179,7 +129,7 @@ public class Ride implements Comparable<Ride> {
         // iterates through the passed array adding each passenger
         for (String p : passengers) {
             // validates name string before processing
-            if (p == null || p.trim().length() == 0)
+            if (p == null)
                 continue;
             // if any processing errors occur
             if (!addPassenger(p)) {
@@ -198,20 +148,21 @@ public class Ride implements Comparable<Ride> {
      */
     public boolean addPassenger(String passenger) {
         // if string is null or empty, do not add a passenger
-        if (passenger == null || passenger.trim().length() == 0)
+        if (passenger == null)
             return false;
 
         // trims white space from the passed string
         passenger = passenger.trim();
 
         // if the passenger list is at, or will exceed max capacity, do not proceed
-        if (pCount >= MAX_PASSENGERS) {
-            System.out.println(String.format("Unable to add passengers to ride! Insufficient ride capacity... pCount: %d, passengers.length: %d, Max passengers: %d", pCount, passengers.length, MAX_PASSENGERS));
+        if (passenger.length() == 0 || pCount >= MAX_PASSENGERS) {
+            debug("Unable to add passengers! Too many passengers were detected...", "addPassenger(String)");
             return false;
         }
 
+        // if multiple passengers are passed in a string as opposed to a string array
         if (passenger.contains(",")) {
-            System.out.println("Unable to add multiple passengers! Please use: addPassenger(String[]) function instead...");
+            debug("Unable to add multiple passengers! Please use: addPassenger(String[]) function instead...", "addPassenger(String)");
             return false;
         }
 
@@ -246,6 +197,58 @@ public class Ride implements Comparable<Ride> {
     }
 
     /**
+     * Initializes a ride object or nullifies it based on the validity of the passed parameters
+     * @param id The ride id for this ride
+     * @param time The timestamp for this ride
+     * @param passengers The passengers for this ride
+     * @param startId The start location id for this ride
+     * @param endId The end location id for this ride
+     */
+    private void init(int id, Time time, String[] passengers, int startId, int endId) {
+        // ensures ride id is valid
+        if (id < 1) {
+            debug("Unable to create ride! An invalid ride id was detected...", "init");
+            return;
+        }
+
+        // no need to validate time because this is handled by the Time class using Time.valueOf(String)
+
+        // ensures all passengers are valid
+        if (!addPassenger(passengers)) {
+            debug("Unable to create ride! At least one invalid passenger was detected...", "init");
+            return;
+        }
+
+        // ensures start id is valid
+        if (startId < 0) {
+            debug("Unable to create ride! An invalid start id was detected...", "init");
+            return;
+        }
+
+        // ensures end id is valid
+        if (endId < 0) {
+            debug("Unable to create ride! An invalid end id was detected", "init");
+            return;
+        }
+
+        // update fields with validated parameters
+        this.id = id;
+        this.time = time;
+        this.startId = startId;
+        this.endId = endId;
+
+        // marks this ride as valid
+        isValid = true;
+    }
+
+    /**
+     * Toggles debug mode on/off to display debug messages to the console
+     */
+    public void toggleDebug() {
+        isDebugging = !isDebugging;
+    }
+
+    /**
      * ~ FOR DEVELOPER USE ONLY ~<br><br>
      *
      * Prints debug messages to console if debugging mode is enabled
@@ -257,7 +260,7 @@ public class Ride implements Comparable<Ride> {
      * @param function The name of the function in which the debugging message is executed
      */
     private void debug(String msg, String function) {
-        if (DEBUGGING)
+        if (isDebugging)
             System.out.println(String.format("[Ride : %s] %s", function.toUpperCase(), msg));
     }
 
