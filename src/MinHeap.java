@@ -19,7 +19,7 @@ public class MinHeap {
      *
      * True if debugging mode should be enabled, else false
      */
-    private boolean isDebugging = true;
+    private boolean isDebugging = false;
     /**
      * The number of vehicles (rides) that the company has available (i.e., the size of the heap, this is set to 21 to allow for 20 rides, since index 0 is not used
      */
@@ -211,20 +211,22 @@ public class MinHeap {
         if (rideArray == null)
             return null;
 
+        rides = rideArray;
+
         // if the passed ride array length is greater than the max. capacity, reject it and return early
-        if (rideArray.length <= 1 || rideArray.length > MAX_CAPACITY) {
+        if (rides.length <= 1 || rides.length > MAX_CAPACITY) {
             debug("Unable to process ride array! An invalid array size was detected, array has been returned unchanged...", "heapify(int, Ride[])");
-            return rideArray;
+            return rides;
         }
 
         // if the passed ride number is out of bounds of the array
-        if (rideNum < 1 || rideNum > rideArray.length) {
+        if (rideNum < 1 || rideNum > rides.length) {
             debug("Unable to process ride number! An invalid number of rides was detected...", "heapify(int, Ride[])");
-            return rideArray;
+            return rides;
         }
 
         // if passed array has 0-based indices, convert to 1-based, if unsuccessfully converted, return early
-        if (!convertTo1Based(rideArray)) {
+        if (!convertTo1Based()) {
             debug("Unable to process passed array! Array was not a convertible or valid base-1 array...", "heapify(int, Ride[])");
             return null;
         }
@@ -232,7 +234,7 @@ public class MinHeap {
         // get parent index based on passed ride number
         int indexParent = rideNum / 2;
         // starting at the lasts non-leaf node, down-heap each parent until root is reached
-        for (int i = indexParent; i >= 1; i--)
+        for (int i = indexParent; i > 0; i--)
             downHeap(i);
 
         return rides;
@@ -318,7 +320,7 @@ public class MinHeap {
     }
 
     /**
-     * Down heaps the array starting at the root node of the heap and working its way down to the last ride
+     * Down heaps the array starting at the passed index of the heap and working its way down to the last ride
      * @param indexStart The index that the down heap should start from
      */
     private void downHeap(int indexStart) {
@@ -327,23 +329,24 @@ public class MinHeap {
         // stores the index of the parent
         int indexParent = indexStart;
 
-        while (indexParent < next) {
+        while (true) {
             // sets pointers to the left child and its parent
             int indexLeftChild = indexParent * 2;
             int indexRightChild = indexLeftChild + 1;
 
             // if passed indices are out of bounds, return early
             if (!isValidIndexes(indexLeftChild, indexRightChild)) {
-                debug(String.format("Invalid indices passed! One or more indices were out of the bounds of the array... IndexLeft = %d, IndexRight = %d, ArrayLength = %d", indexLeftChild, indexRightChild, rides.length), "downHeap(int indexStart)");
+                debug("Invalid indices passed! One or more indices were out of the bounds of the array...", "downHeap(int)");
                 return;
             }
 
             // fetches the index of the child with the smallest timestamp
             indexSmallest = getSmaller(indexLeftChild, indexRightChild);
             // check that the smallest value is within the bounds of the array
-            if (indexSmallest >= next)
+            if (indexSmallest <= indexStart) {
                 // if the index of the smallest value is not included in the current array count, do not proceed
                 return;
+            }
 
             // if the parent value is not the smallest, swap and continue, else break the loop
             if (isSmaller(indexSmallest, indexParent)) {
@@ -549,20 +552,16 @@ public class MinHeap {
     /**
      * Ensures the passed ride array is base-0, if not, attempts to convert to base-1 and returns it, if a
      * valid base-1 array is passed, this will be returned unchanged.
-     * @param rideArray The ride array to convert to a 1-based ride array
      * @return A boolean value that is true if the conversion is successful, else returns null
      */
-    private boolean convertTo1Based(Ride[] rideArray) {
-        // if the new array will exceed the max. capacity after conversion, return false
-        if (rideArray.length > MAX_CAPACITY)
-            return false;
-
-        // override default heap with passed array
-        rides = rideArray;
-
+    private boolean convertTo1Based() {
         // if the first item is null, it is probably already base 1
         if (rides[0] == null)
             return true;
+
+        // if the new array will exceed the max. capacity after conversion, return false
+        if (rides.length + 1 > MAX_CAPACITY)
+            return false;
 
         // if the last element of the array is not blank, increment size of array
         if (rides[rides.length - 1] != null)
