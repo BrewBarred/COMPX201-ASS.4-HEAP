@@ -22,7 +22,7 @@ public class Main {
         Ride ride12 = new Ride(1147, Time.valueOf("10:10:10"), "p2", 420, 500);
         Ride ride13 = new Ride(2345, Time.valueOf("10:15:15"), "p3", 420, 500);
 
-        Ride[] rideArray = {ride4, ride2, ride1, ride3};
+        Ride[] rideArray = {null, ride3, null, ride2, null, ride4, null, null, ride1};
 
         //heap.insert(rideArray);
         // heapify base-0 array

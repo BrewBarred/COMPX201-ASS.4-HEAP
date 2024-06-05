@@ -3,6 +3,7 @@ import org.junit.jupiter.api.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.sql.Time;
+import java.util.Arrays;
 
 /**
  * Test suite for the MinHeap class, used to test each function is operating correctly and producing the expected outputs
@@ -258,7 +259,7 @@ public class MinHeapTest {
 
         // attempt to insert the null array
         heap.insert((Ride[]) null);
-        String expectedOutput = "Unable to add ride array! The passed ride array was null..";
+        String expectedOutput = "[MinHeap : insert(Ride[])] Unable to add ride array! The passed ride array was null..";
         String actualOutput = getStream();
 
         // check outputs match
@@ -356,7 +357,7 @@ public class MinHeapTest {
         // attempt to insert the null array
         heap.insert(rides);
         // define the expected output
-        String expectedOutput = "Unable to add ride array! The passed ride array was empty...";
+        String expectedOutput = "[MinHeap : insert(Ride[])] Unable to add ride array! The passed ride array was empty...";
         // fetch the actual output from the stream
         String actualOutput = getStream();
 
@@ -375,7 +376,7 @@ public class MinHeapTest {
 
         // attempt to insert the size 0 array
         heap.insert(rideArray);
-        String expectedOutput = "Unable to add ride array! The passed ride array length was an invalid size...";
+        String expectedOutput = "[MinHeap : insert(Ride[])] Unable to add ride array! The passed ride array length was an invalid size...";
         String actualOutput = getStream();
 
         // check the correct error message is thrown
@@ -395,7 +396,7 @@ public class MinHeapTest {
         // attempt to insert the array
         heap.insert(rides);
         // define the expected output
-        String expectedOutput = "Unable to add ride array! The passed ride array length was an invalid size...";
+        String expectedOutput = "[MinHeap : insert(Ride[])] Unable to add ride array! The passed ride array length was an invalid size...";
         String actualOutput = getStream();
 
         // check the correct error message is thrown
@@ -1335,23 +1336,26 @@ public class MinHeapTest {
         assertTrue(isUnchanged);
     }
     /**
-     * Tests to ensure that heapify(int, Ride[]) returns a null Ride[] since it is already heapified
+     * Tests to ensure that heapify(int, Ride[]) returns the Ride[] unchanged since it is unable to be heapified
      */
     @Test
-    @DisplayName("Test heapify(int, Ride[]): Heapify w/array of nulls, check unchanged")
+    @DisplayName("Test heapify(int, Ride[]): Heapify w/array of nulls, check error")
     public void testHeapifyArrayNulls() {
         // create an array of nulls
         Ride[] rideArray = {null, null, null, null, null};
 
-        // check heapify remains unchanged and collect result
-        boolean isUnchanged = heap.heapify(5, rideArray) == rideArray;
+        // heapify array of nulls
+        heap.heapify(5, rideArray);
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : insert(Ride[])] Unable to add ride array! The passed ride array was empty...";
+        String actualOutput = getStream();
 
-        // check arrays match
-        assertTrue(isUnchanged);
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) returns a passed ride w/array size of 0 unchanged
+     * Tests to ensure that heapify(int, Ride[]) rejects a passed ride w/array size of 0
      */
     @Test
     @DisplayName("Test heapify(int, Ride[]): Heapify w/array size of 0, check error")
@@ -1370,21 +1374,22 @@ public class MinHeapTest {
     }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) returns a passed ride w/array size of 1 unchanged
+     * Tests to ensure that heapify(int, Ride[]) successfully heapifies a passed ride w/array size of 1
      */
     @Test
-    @DisplayName("Test heapify(int, Ride[]): Heapify w/array size of 0, check error")
+    @DisplayName("Test heapify(int, Ride[]): Heapify w/array size of 1, check root")
     public void testHeapifyArraySize1() {
         // create array w/one ride in it
         Ride[] rideArray = {ride1};
 
         // heapify array w/one ride
         heap.heapify(1, rideArray);
-        String expectedOutput = "[MinHeap : heapify(int, Ride[])] Unable to process ride array! An invalid array size was detected, array has been returned unchanged...";
-        String actualOutput = getStream();
+        // define expected and actual root values
+        Ride expectedRoot = ride1;
+        Ride actualRoot = heap.rides[1];
 
         // check unchanged output
-        assertEquals(expectedOutput, actualOutput);
+        assertEquals(expectedRoot, actualRoot);
     }
 
     /**
@@ -1431,13 +1436,13 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test heapify(int, Ride[]): Heapify a zero-based array, check root")
     public void testHeapifyBase0() {
-        // create a base-0 array
+        // using default rides 1-4, create a base-0 array...
         Ride[] rideArray = {ride4, ride2, ride1, ride3};
 
         // heapify base-0 array
         heap.heapify(4, rideArray);
         // check root equals lowest ride time value (ride1)
-        boolean isHeapified = heap.rides[1].time == ride1.time;
+        boolean isHeapified = heap.rides[1] == ride1;
 
         // check root value matches ride1
         assertTrue(isHeapified);
@@ -1449,16 +1454,16 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test heapify(int, Ride[]): Heapify a one-based array, check root")
     public void testHeapifyBase1() {
+        // using default rides 1-4, create a base-1 array...
+        Ride[] rideArray = {null, ride3, ride2, ride4, ride1};
 
-    }
+        // heapify base-1 array
+        heap.heapify(4, rideArray);
+        // check root equals lowest ride time value (ride1)
+        boolean isHeapified = heap.rides[1] == ride1;
 
-    /**
-     * Tests to ensure that heapify(int, Ride[]) can heapify an array containing random null elements
-     */
-    @Test
-    @DisplayName("Test heapify(int, Ride[]): Heapify array w/random nulls, check last leaf")
-    public void testHeapifyRandNulls() {
-
+        // check root value matches ride1
+        assertTrue(isHeapified);
     }
 
     /**
@@ -1467,7 +1472,16 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test heapify(int, Ride[]): Heapify single-array, check root")
     public void testHeapifyArraySingle() {
+        // using default ride1...
+        Ride[] rideArray = {ride1};
 
+        // attempt to heapify single array
+        heap.heapify(1, rideArray);
+        // define expected root
+        boolean isExpectedRoot = heap.rides[1] == ride1;
+
+        // check root
+        assertTrue(isExpectedRoot);
     }
 
     /**
@@ -1476,16 +1490,36 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test heapify(int, Ride[]): Heapify multi-array, check root")
     public void testHeapifyArrayMulti() {
+        // create a multi-array
+        Ride[] rideArray = {ride2, ride3, ride1, ride4};
 
+        // heapify multi-array
+        heap.heapify(4, rideArray);
+        // define expected and actual root values
+        Ride expectedRoot = ride1;
+        Ride actualRoot = heap.rides[1];
+
+        // check root values
+        assertEquals(expectedRoot, actualRoot);
     }
 
     /**
      * Tests to ensure that heapify(int, Ride[]) accepts a full array when the heap is empty
      */
     @Test
-    @DisplayName("Test heapify(int, Ride[]): Heapify full array w/empty heap, check root")
+    @DisplayName("Test heapify(int, Ride[]): Heapify full array w/full array, check root")
     public void testHeapifyArrayFull() {
+        // using defaultRides array... copy default rides array to make it a "full" heap rather than creating 20 odd rides here
+        defaultRides = Arrays.copyOf(defaultRides, 21);
 
+        // heapify full array
+        heap.heapify(20, defaultRides);
+        // define expected and actual root values
+        Ride expectedRoot = ride1;
+        Ride actualRoot = heap.rides[1];
+
+        // check root values
+        assertEquals(expectedRoot, actualRoot);
     }
 
     /**
@@ -1494,34 +1528,19 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test heapify(int, Ride[]): Heapify full array w/single heap, check last leaf")
     public void testHeapifyArrayFullHeapSingle() {
+        // insert a single ride in to the heap
+        heap.insert(ride4);
+        // using defaultRides array... copy default rides array to make it a "full" heap rather than creating 20 odd rides here
+        defaultRides = Arrays.copyOf(defaultRides, heap.MAX_CAPACITY);
 
-    }
+        // heapify full array
+        heap.heapify(heap.MAX_CAPACITY - 1, defaultRides);
+        // define expected and actual root values
+        Ride expectedRoot = ride1;
+        Ride actualRoot = heap.rides[1];
 
-    /**
-     * Tests to ensure that heapify(int, Ride[]) accepts a full array when the heap already has multiple rides
-     */
-    @Test
-    @DisplayName("Test heapify(int, Ride[]): Heapify full array w/multi heap")
-    public void testHeapifyArrayFullHeapMulti() {
-
-    }
-
-    /**
-     * Tests to ensure that heapify(int, Ride[]) accepts a full array when the heap is already full
-     */
-    @Test
-    @DisplayName("Test heapify(int, Ride[]): Heapify full array w/full heap")
-    public void testHeapifyArrayFullHeapFull() {
-
-    }
-
-    /**
-     * Tests to ensure that heapify(int, Ride[]) updates the default heap with the heapified array
-     */
-    @Test
-    @DisplayName("Test heapify(int, Ride[]): Heapify w/valid params, check heap")
-    public void testHeapifyHeapUpdate() {
-
+        // check root values
+        assertEquals(expectedRoot, actualRoot);
     }
 
 // Test section: peek()
@@ -1532,7 +1551,14 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test peek(): Peek at null heap, check null")
     public void testPeekHeapNull() {
+        // set heap to null
+        heap.rides = null;
 
+        // call peek and check against null
+        boolean isNull = heap.peek() == null;
+
+        // check peek returns null
+        assertTrue(isNull);
     }
 
     /**
@@ -1541,16 +1567,30 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test peek(): Peek at empty heap, check null")
     public void testPeekHeapEmpty() {
+        // heap is empty by default, no need for further arrangement...
 
+        // check peek returns null for empty heaps
+        boolean isNull = heap.peek() == null;
+
+        // check null
+        assertTrue(isNull);
     }
 
     /**
      * Tests to ensure that the peek() method returns the root value when peeking at a heap with a single value
      */
     @Test
-    @DisplayName("Test peek(): Peek at single-heap, check root")
+    @DisplayName("Test peek(): Peek at single-heap, check outputs")
     public void testPeekHeapSingle() {
+        // insert a single ride into heap
+        heap.insert(ride1);
 
+        // define expected and actual outputs
+        Ride expectedOutput = ride1;
+        Ride actualOutput = heap.peek();
+
+        // check outputs
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -1559,16 +1599,16 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test peek(): Peek at multi-heap, check root")
     public void testPeekHeapMulti() {
+        // using defaultRides array...
 
-    }
+        // insert multi-array
+        heap.insert(defaultRides);
+        // define expected and actual outputs
+        Ride expectedOutput = ride1;
+        Ride actualOutput = heap.peek();
 
-    /**
-     * Tests to ensure that the peek() method returns the root value when peeking at a full heap
-     */
-    @Test
-    @DisplayName("Test peek(): Peek at full heap, check root")
-    public void testPeekHeapFull() {
-
+        // check outputs
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -1577,7 +1617,17 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test peek(): Peek after a valid peek is performed, check root")
     public void testPeekAfterPeek() {
+        // using default ride1... insert valid ride into heap
+        heap.insert(ride1);
 
+        // peek once
+        heap.peek();
+        // define expected and actual outputs, peeking again to confirm the root isn't removed after first peek
+        Ride expectedOutput = ride1;
+        Ride actualOutput = heap.peek();
+
+        // check outputs
+        assertEquals(expectedOutput, actualOutput);
     }
 
 // Test section: dump()

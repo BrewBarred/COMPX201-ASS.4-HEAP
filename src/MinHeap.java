@@ -43,19 +43,19 @@ public class MinHeap {
     public boolean insert(Ride[] rideArray) {
         // return early if the passed array is null
         if (rideArray == null) {
-            System.out.println("Unable to add ride array! The passed ride array was null..");
+            debug("Unable to add ride array! The passed ride array was null..", "insert(Ride[])");
             return false;
         }
 
         // return early if the passed array length is beyond the maximum capacity
         if (rideArray.length < 1 || rideArray.length > MAX_CAPACITY) {
-            System.out.println("Unable to add ride array! The passed ride array length was an invalid size...");
+            debug("Unable to add ride array! The passed ride array length was an invalid size...", "insert(Ride[])");
             return false;
         }
 
         // return early if the passed array contains no rides or only null elements
         if (isEmpty(rideArray)) {
-            System.out.println("Unable to add ride array! The passed ride array was empty...");
+            debug("Unable to add ride array! The passed ride array was empty...", "insert(Ride[])");
             return false;
         }
 
@@ -211,18 +211,16 @@ public class MinHeap {
         if (rideArray == null)
             return null;
 
-        rides = rideArray;
-
         // if the passed ride array length is greater than the max. capacity, reject it and return early
-        if (rides.length <= 1 || rides.length > MAX_CAPACITY) {
+        if (rideArray.length < 1 || rideArray.length > MAX_CAPACITY) {
             debug("Unable to process ride array! An invalid array size was detected, array has been returned unchanged...", "heapify(int, Ride[])");
-            return rides;
+            return rideArray;
         }
 
         // if the passed ride number is out of bounds of the array
-        if (rideNum < 1 || rideNum > rides.length) {
+        if (rideNum < 1 || rideNum > rideArray.length) {
             debug("Unable to process ride number! An invalid number of rides was detected...", "heapify(int, Ride[])");
-            return rides;
+            return rideArray;
         }
 
         // if passed array has 0-based indices, convert to 1-based, if unsuccessfully converted, return early
@@ -230,6 +228,10 @@ public class MinHeap {
             debug("Unable to process passed array! Array was not a convertible or valid base-1 array...", "heapify(int, Ride[])");
             return null;
         }
+
+        // override the default heap w/passed ride array
+        if (!insert(rideArray))
+            return rideArray;
 
         // get parent index based on passed ride number
         int indexParent = rideNum / 2;
@@ -325,7 +327,7 @@ public class MinHeap {
      */
     private void downHeap(int indexStart) {
         // stores the index of the smaller child
-        int indexSmallest;
+        int indexSmallest = -1;
         // stores the index of the parent
         int indexParent = indexStart;
 
@@ -334,18 +336,14 @@ public class MinHeap {
             int indexLeftChild = indexParent * 2;
             int indexRightChild = indexLeftChild + 1;
 
-            // if passed indices are out of bounds, return early
-            if (!isValidIndexes(indexLeftChild, indexRightChild)) {
-                debug("Invalid indices passed! One or more indices were out of the bounds of the array...", "downHeap(int)");
-                return;
+            // if left child is valid and left value is smaller than parent value
+            if (isValidIndex(indexLeftChild) && isSmaller(indexLeftChild, indexParent)) {
+                indexSmallest = indexLeftChild;
             }
 
-            // fetches the index of the child with the smallest timestamp
-            indexSmallest = getSmaller(indexLeftChild, indexRightChild);
-            // check that the smallest value is within the bounds of the array
-            if (indexSmallest <= indexStart) {
-                // if the index of the smallest value is not included in the current array count, do not proceed
-                return;
+            // if right child is valid and right value is smaller than the smallest value
+            if (isValidIndex(indexRightChild) && isSmaller(indexRightChild, indexSmallest)) {
+                indexSmallest = indexRightChild;
             }
 
             // if the parent value is not the smallest, swap and continue, else break the loop

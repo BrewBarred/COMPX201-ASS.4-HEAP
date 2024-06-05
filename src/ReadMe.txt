@@ -13,6 +13,8 @@ Run:
 
 -- NOTES ABOUT THE IMPLEMENTATION --
 
+-> If you decide to enable debugging in the MinHeap class for whatever reason, please ensure it is set to false prior to running the test suite as a lot of tests will fail if you don't.
+
 -> It was unclear if we should be ensuring any passed arrays (such as those passed to the insert/heapify methods), naturally I
    would add code to ensure that the array either matches the maximum capacity or extend the passed array with null objects to meet
    the capacity requirements, but I have not done this to minimize any (potentially) unnecessary code.
@@ -38,3 +40,6 @@ Run:
 -> The tests for the optimizeRide function have been done as a part of the Ride.insert functions tests because that is where the optimization function is called
 
 -> If an array with a size of less than 2 is heapified, it will return the array without overriding the heap because I consider this to be un-heapifiable
+
+-> Heapify assumes that a valid 0-based or 1-based array will be passed, and will not work if an array with random null elements
+throughout it are passed since this wasn't an explicit requirement for the assignment
