@@ -7,18 +7,18 @@ import java.lang.reflect.Field;
  * @Note: Example instantiation:<br>
  * HeapPrinter printer = new HeapPrinter(Ride[])<br>
  * <br>Example method call:<br>
- * printer.printAll(Ride[] heap.rideArray);<br>
+ * printer.printAll(Ride[] heap.rides);<br>
  * <br>Available methods:<br>
- * printArray(Ride[] rideArray)<br>
- * printIds(Ride[] rideArray)<br>
- * printTime(Ride[] rideArray)<br>
- * printAll(Ride[] rideArray)<br>
+ * printArray(Ride[] rides)<br>
+ * printIds(Ride[] rides)<br>
+ * printTime(Ride[] rides)<br>
+ * printAll(Ride[] rides)<br>
  */
 @SuppressWarnings("CallToPrintStackTrace")
 public class HeapPrinter {
     /**
      * Function to print each element of the passed 'Ride' array starting from the 0th item along with its ID and Timestamp if any exist
-     * @param rideArray The ride array to iterate through for the Index, ID, and timestamp
+     * @param rides The ride array to iterate through for the Index, ID, and timestamp
      * @Note: Ride array elements must be of type 'Ride', its timestamp field must be named "time"
      * and its ID field must be named "id". Any unused spaces in the rideArray should be set to null
      */

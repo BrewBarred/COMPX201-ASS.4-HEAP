@@ -242,7 +242,6 @@ public class MinHeapTest {
 
         // check both outputs match
         assertEquals(expectedOutput, actualOutput);
-
     }
 
 // Test class: MinHeap.java
@@ -1293,7 +1292,7 @@ public class MinHeapTest {
         // attempt to heapify w/invalid ride num
         heap.heapify(-1, defaultRides);
         // define expected and actual outputs
-        String expectedOutput = "[MinHeap : heapify(int rideNum, Ride[] rideArray)] Unable to process ride number! An invalid number of rides was detected...";
+        String expectedOutput = "[MinHeap : heapify(int, Ride[])] Unable to process ride number! An invalid number of rides was detected...";
         String actualOutput = getStream();
 
         // check error message
@@ -1312,7 +1311,7 @@ public class MinHeapTest {
         // attempt to heapify array w/ride num too high
         heap.heapify(defaultRides.length + 1, defaultRides);
         // define expected and actual outputs
-        String expectedOutput = "[MinHeap : heapify(int rideNum, Ride[] rideArray)] Unable to process ride number! An invalid number of rides was detected...";
+        String expectedOutput = "[MinHeap : heapify(int, Ride[])] Unable to process ride number! An invalid number of rides was detected...";
         String actualOutput = getStream();
 
         // check error message
@@ -1352,39 +1351,78 @@ public class MinHeapTest {
     }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) returns a passed ride w/array size of 0
+     * Tests to ensure that heapify(int, Ride[]) returns a passed ride w/array size of 0 unchanged
      */
     @Test
-    @DisplayName("Test heapify(int, Ride[]): Heapify w/array size of 0, check unchanged")
+    @DisplayName("Test heapify(int, Ride[]): Heapify w/array size of 0, check error")
     public void testHeapifyArraySize0() {
+        // create array w/size of 0
+        Ride[] rideArray = new Ride[0];
 
+        // heapify array w/size 0
+        heap.heapify(0, rideArray);
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : heapify(int, Ride[])] Unable to process ride array! An invalid array size was detected, array has been returned unchanged...";
+        String actualOutput = getStream();
+
+        // check unchanged output
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) rejects a passed ride w/array size of 0
+     * Tests to ensure that heapify(int, Ride[]) returns a passed ride w/array size of 1 unchanged
      */
     @Test
-    @DisplayName("Test heapify(int, Ride[]): Heapify w/array size of 0, check unchanged")
+    @DisplayName("Test heapify(int, Ride[]): Heapify w/array size of 0, check error")
     public void testHeapifyArraySize1() {
+        // create array w/one ride in it
+        Ride[] rideArray = {ride1};
 
+        // heapify array w/one ride
+        heap.heapify(1, rideArray);
+        String expectedOutput = "[MinHeap : heapify(int, Ride[])] Unable to process ride array! An invalid array size was detected, array has been returned unchanged...";
+        String actualOutput = getStream();
+
+        // check unchanged output
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
-     * Tests to ensure that heapify(int, Ride[]) can heapify an empty array
+     * Tests to ensure that heapify(int, Ride[]) can heapify an empty array w/size greater than 0
      */
     @Test
-    @DisplayName("Test heapify(int, Ride[]): Heapify empty array, check unchanged")
+    @DisplayName("Test heapify(int, Ride[]): Heapify empty array w/size > 0, check error")
     public void testHeapifyArrayEmpty() {
+        // create an empty array w/size > 0
+        Ride[] rideArray = new Ride[21];
 
+        // heapify empty array w/size > 0
+        heap.heapify(0, rideArray);
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : heapify(int, Ride[])] Unable to process ride number! An invalid number of rides was detected...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
      * Tests to ensure that heapify(int, Ride[]) rejects a passed ride array size that is greater than the max. capacity value
      */
     @Test
-    @DisplayName("Test heapify(int, Ride[]): ")
+    @DisplayName("Test heapify(int, Ride[]): Heapify an array w/array size > max. capacity, check error")
     public void testHeapifyArrayTooBig() {
+        // create an array w/size > max. capacity
+        Ride[] rideArray = new Ride[heap.MAX_CAPACITY + 1];
 
+        // heapify array w/size > max. capacity
+        heap.heapify(21, rideArray);
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : heapify(int, Ride[])] Unable to process ride array! An invalid array size was detected, array has been returned unchanged...";
+        String actualOutput = getStream();
+
+        // check unchanged output
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -1393,7 +1431,16 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test heapify(int, Ride[]): Heapify a zero-based array, check root")
     public void testHeapifyBase0() {
+        // create a base-0 array
+        Ride[] rideArray = {ride4, ride2, ride1, ride3};
 
+        // heapify base-0 array
+        heap.heapify(4, rideArray);
+        // check root equals lowest ride time value (ride1)
+        boolean isHeapified = heap.rides[1].time == ride1.time;
+
+        // check root value matches ride1
+        assertTrue(isHeapified);
     }
 
     /**

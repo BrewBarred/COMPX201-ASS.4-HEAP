@@ -1,5 +1,6 @@
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.Arrays;
 
 /**
  * Creates a new dynamic replaceable minimum heap data structure that can store custom 'Ride' objects ordered by their scheduled timestamps
@@ -18,7 +19,7 @@ public class MinHeap {
      *
      * True if debugging mode should be enabled, else false
      */
-    private boolean isDebugging = false;
+    private boolean isDebugging = true;
     /**
      * The number of vehicles (rides) that the company has available (i.e., the size of the heap, this is set to 21 to allow for 20 rides, since index 0 is not used
      */
@@ -211,31 +212,29 @@ public class MinHeap {
             return null;
 
         // if the passed ride array length is greater than the max. capacity, reject it and return early
-        if (rideArray.length == 0 || rideArray.length > MAX_CAPACITY) {
-            debug("Unable to process ride array! An invalid array size was detected... RideCount: " + rideNum + ", Max. Capacity: " + MAX_CAPACITY, "heapify(int rideNum, Ride[] rideArray)");
+        if (rideArray.length <= 1 || rideArray.length > MAX_CAPACITY) {
+            debug("Unable to process ride array! An invalid array size was detected, array has been returned unchanged...", "heapify(int, Ride[])");
             return rideArray;
         }
 
         // if the passed ride number is out of bounds of the array
-        if (rideNum < 1 || rideNum >= rideArray.length) {
-            debug("Unable to process ride number! An invalid number of rides was detected...", "heapify(int rideNum, Ride[] rideArray)");
+        if (rideNum < 1 || rideNum > rideArray.length) {
+            debug("Unable to process ride number! An invalid number of rides was detected...", "heapify(int, Ride[])");
             return rideArray;
         }
 
-        // overwrite the default heap with the passed heap
-        rides = rideArray;
-
-        // if passed array has 0-based indices, convert to 1-based
-        if (rides[0] != null)
-            convertTo1Based(rides);
+        // if passed array has 0-based indices, convert to 1-based, if unsuccessfully converted, return early
+        if (!convertTo1Based(rideArray)) {
+            debug("Unable to process passed array! Array was not a convertible or valid base-1 array...", "heapify(int, Ride[])");
+            return null;
+        }
 
         // get parent index based on passed ride number
         int indexParent = rideNum / 2;
         // starting at the lasts non-leaf node, down-heap each parent until root is reached
-        for (int i = indexParent; i > 0; i--)
+        for (int i = indexParent; i >= 1; i--)
             downHeap(i);
 
-        // overrides the heap with the new heapified array
         return rides;
     }
 
@@ -548,16 +547,33 @@ public class MinHeap {
     }
 
     /**
-     * Converts the passed 0-based ride array into a 1-based ride array
+     * Ensures the passed ride array is base-0, if not, attempts to convert to base-1 and returns it, if a
+     * valid base-1 array is passed, this will be returned unchanged.
      * @param rideArray The ride array to convert to a 1-based ride array
+     * @return A boolean value that is true if the conversion is successful, else returns null
      */
-    private void convertTo1Based(Ride[] rideArray) {
-        // shifts each element in the array one position to the right
-        for (int i = rideArray.length - 1; i >= 0; i--)
-            rideArray[i + 1] = rideArray[i];
+    private boolean convertTo1Based(Ride[] rideArray) {
+        // if the new array will exceed the max. capacity after conversion, return false
+        if (rideArray.length > MAX_CAPACITY)
+            return false;
 
-        // sets 0 to null since it is not used
-        rideArray[0] = null;
+        // override default heap with passed array
+        rides = rideArray;
+
+        // if the first item is null, it is probably already base 1
+        if (rides[0] == null)
+            return true;
+
+        // if the last element of the array is not blank, increment size of array
+        if (rides[rides.length - 1] != null)
+            rides = Arrays.copyOf(rides, rides.length + 1);
+
+        // shifts each element in the array one position to the right
+        for (int i = rides.length - 1; i > 0; i--)
+            rides[i] = rides[i - 1];
+
+        rides[0] = null;
+        return true;
     }
 
     /**

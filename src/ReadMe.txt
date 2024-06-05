@@ -36,3 +36,5 @@ Run:
    the creation of an invalid ride, but they still exist. I have a boolean to confirm whether this validation process was successful or not.
 
 -> The tests for the optimizeRide function have been done as a part of the Ride.insert functions tests because that is where the optimization function is called
+
+-> If an array with a size of less than 2 is heapified, it will return the array without overriding the heap because I consider this to be un-heapifiable
