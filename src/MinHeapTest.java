@@ -1293,7 +1293,7 @@ public class MinHeapTest {
         // attempt to heapify w/invalid ride num
         heap.heapify(-1, defaultRides);
         // define expected and actual outputs
-        String expectedOutput = "[MinHeap : heapify(int, Ride[])] Unable to process ride number! An invalid number of rides was detected...";
+        String expectedOutput = "[MinHeap : heapify(int)] Unable to process ride number! An invalid number of rides was detected...";
         String actualOutput = getStream();
 
         // check error message
@@ -1312,7 +1312,7 @@ public class MinHeapTest {
         // attempt to heapify array w/ride num too high
         heap.heapify(defaultRides.length + 1, defaultRides);
         // define expected and actual outputs
-        String expectedOutput = "[MinHeap : heapify(int, Ride[])] Unable to process ride number! An invalid number of rides was detected...";
+        String expectedOutput = "[MinHeap : heapify(int)] Unable to process ride number! An invalid number of rides was detected...";
         String actualOutput = getStream();
 
         // check error message
@@ -1327,13 +1327,11 @@ public class MinHeapTest {
     public void testHeapifyArrayNull() {
         // no arrangement needed
 
-        // attempt to heapify null array and store result in the heap array
-        heap.rides = heap.heapify(1, (Ride[]) null);
-        // check heap array remains null
-        boolean isUnchanged = heap.rides == null;
+        // check heap array remains null after attempting to heapify null array
+        Ride[] actualArray = heap.heapify(1, (Ride[]) null);
 
         // check heap array is unchanged
-        assertTrue(isUnchanged);
+        assertEquals((Ride[]) null, actualArray);
     }
     /**
      * Tests to ensure that heapify(int, Ride[]) returns the Ride[] unchanged since it is unable to be heapified
@@ -1366,7 +1364,7 @@ public class MinHeapTest {
         // heapify array w/size 0
         heap.heapify(0, rideArray);
         // define expected and actual outputs
-        String expectedOutput = "[MinHeap : heapify(int, Ride[])] Unable to process ride array! An invalid array size was detected, array has been returned unchanged...";
+        String expectedOutput = "[MinHeap : heapify(int, ride[])] Unable to heapify ride! Array was an invalid length or state...";
         String actualOutput = getStream();
 
         // check unchanged output
@@ -1404,8 +1402,10 @@ public class MinHeapTest {
         // heapify empty array w/size > 0
         heap.heapify(0, rideArray);
         // define expected and actual outputs
-        String expectedOutput = "[MinHeap : heapify(int, Ride[])] Unable to process ride number! An invalid number of rides was detected...";
-        String actualOutput = getStream();
+        String expectedOutput = "[MinHeap : insert(Ride[])] Unable to add ride array! The passed ride array was empty...\n"+
+                "[MinHeap : heapify(int)] Unable to process ride number! An invalid number of rides was detected...";
+        // takes stream without carriage return which bugs output
+        String actualOutput = getStream().replace("\r\n", "\n");
 
         // check error message
         assertEquals(expectedOutput, actualOutput);
@@ -1423,7 +1423,7 @@ public class MinHeapTest {
         // heapify array w/size > max. capacity
         heap.heapify(21, rideArray);
         // define expected and actual outputs
-        String expectedOutput = "[MinHeap : heapify(int, Ride[])] Unable to process ride array! An invalid array size was detected, array has been returned unchanged...";
+        String expectedOutput = "[MinHeap : insert(Ride[])] Unable to add ride array! The passed ride array length was an invalid size...";
         String actualOutput = getStream();
 
         // check unchanged output
@@ -1510,10 +1510,11 @@ public class MinHeapTest {
     @DisplayName("Test heapify(int, Ride[]): Heapify full array w/full array, check root")
     public void testHeapifyArrayFull() {
         // using defaultRides array... copy default rides array to make it a "full" heap rather than creating 20 odd rides here
-        defaultRides = Arrays.copyOf(defaultRides, 21);
+        // (set to 20 not 21 since it will be converted from base-0 to base-1)
+        defaultRides = Arrays.copyOf(defaultRides, 20);
 
         // heapify full array
-        heap.heapify(20, defaultRides);
+        heap.heapify(4, defaultRides);
         // define expected and actual root values
         Ride expectedRoot = ride1;
         Ride actualRoot = heap.rides[1];
@@ -1531,7 +1532,8 @@ public class MinHeapTest {
         // insert a single ride in to the heap
         heap.insert(ride4);
         // using defaultRides array... copy default rides array to make it a "full" heap rather than creating 20 odd rides here
-        defaultRides = Arrays.copyOf(defaultRides, heap.MAX_CAPACITY);
+        // (set to max. capacity - 1 to allow for base-1 conversion)
+        defaultRides = Arrays.copyOf(defaultRides, heap.MAX_CAPACITY - 1);
 
         // heapify full array
         heap.heapify(heap.MAX_CAPACITY - 1, defaultRides);
@@ -1822,7 +1824,19 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test sort(): Sort a full heap, check output")
     public void testSortHeapFull() {
+        // create a multi-ride array unordered (set to 20 to allow for base-1 conversion)
+        Ride[] rideArray = {ride3, ride2, ride1, ride4};
+        rideArray = Arrays.copyOf(rideArray, 20);
+        // insert multi-ride array
+        heap.insert(rideArray);
 
+        // sort multi-heap
+        heap.sort();
+        // define expected order (only first and last nodes for simplicity)
+        boolean isOrdered = heap.rides[1].compareTo(ride1) == 0 && heap.rides[4].compareTo(ride4) == 0;
+
+        // check first and last nodes match expected order
+        assertTrue(isOrdered);
     }
 
     /**

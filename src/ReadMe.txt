@@ -1,17 +1,18 @@
-The JUnit .jar that this application was compiled with has been included in the directory.
+The JUnit .jar that this application was compiled with has been included in the directory...
+
 In order to compile and run the code please use the following console commands:   
 
-Compile:
+    Compile:
 
-    javac -cp "junit-platform-console-standalone-1.8.2.jar" *.java
+        javac -cp "junit-platform-console-standalone-1.8.2.jar" *.java
 
-Run:
+    Run:
 
-    java -jar junit-platform-console-standalone-1.8.2.jar -cp .\ -c MinHeapTest
+        java -jar junit-platform-console-standalone-1.8.2.jar -cp .\ -c MinHeapTest
 
 
 
--- NOTES ABOUT THE IMPLEMENTATION --
+   <>---< NOTES ABOUT THE IMPLEMENTATION >---<>
 
 -> If you decide to enable debugging in the MinHeap class for whatever reason, please ensure it is set to false prior to running the test suite as a lot of tests will fail if you don't.
 
@@ -42,4 +43,6 @@ Run:
 -> If an array with a size of less than 2 is heapified, it will return the array without overriding the heap because I consider this to be un-heapifiable
 
 -> Heapify assumes that a valid 0-based or 1-based array will be passed, and will not work if an array with random null elements
-throughout it are passed since this wasn't an explicit requirement for the assignment
+   throughout it are passed since this wasn't an explicit requirement for the assignment
+
+-> There are a few known bugs that I didn't allow enough time to fix but here's hoping you can't find them! >:)

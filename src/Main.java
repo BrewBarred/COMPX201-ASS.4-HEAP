@@ -29,33 +29,18 @@ public class Main {
         Ride ride12 = new Ride(1147, Time.valueOf("10:10:10"), "p2", 420, 500);
         Ride ride13 = new Ride(2345, Time.valueOf("10:15:15"), "p3", 420, 500);
 
-        Ride[] rideArray = {ride3, null, ride2, null, ride4, null, null, ride1};
+        //Ride[] rideArray = {ride3, null, ride2, null, ride4, null, null, ride1};
 
-        //heap.insert(rideArray);
-        // heapify base-0 array
-        //heap.heapify(4, rideArray);
-//        System.out.println(heap.rides[0]);
-//        System.out.println(heap.rides[1]);
-//        System.out.println(heap.rides[2]);
-//        System.out.println(heap.rides[3]);
-        // check root equals lowest ride time value (ride1)
-        //printer.printTime(heap.heapify(4, rideArray));
+        // using default rides 1-4, create a base-1 array...
+        Ride[] rideArray = {null, ride3, ride2, ride4, ride1};
 
-        // create a multi-ride array unordered
-        Ride[] rideArray2 = {ride3, ride2, ride4, ride1};
-        // insert multi-ride array
-        //heap.insert(rideArray2);
-        heap.insert(rideArray2);
-        //heap.convertToBase1();
-
-//        // sort multi-heap
+        // heapify base-1 array
+        heap.insert(rideArray);
         //heap.heapify(4, heap.rides);
         heap.sort();
-//        // define expected order (only first and last nodes for simplicity)
-//        boolean isOrdered = heap.rides[1].compareTo(ride1) == 0 && heap.rides[4].compareTo(ride4) == 0;
-        //heap.convertToBase1();
-        // check times match
+        // check root equals lowest ride time value (ride1)
         printer.printTime(heap);
+
     }
 
-} // end class
+}
