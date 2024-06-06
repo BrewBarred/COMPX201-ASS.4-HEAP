@@ -2,6 +2,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.sql.Time;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class Main {
 
     private static final ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -27,7 +29,7 @@ public class Main {
         Ride ride12 = new Ride(1147, Time.valueOf("10:10:10"), "p2", 420, 500);
         Ride ride13 = new Ride(2345, Time.valueOf("10:15:15"), "p3", 420, 500);
 
-        Ride[] rideArray = {null, ride3, null, ride2, null, ride4, null, null, ride1};
+        Ride[] rideArray = {ride3, null, ride2, null, ride4, null, null, ride1};
 
         //heap.insert(rideArray);
         // heapify base-0 array
@@ -39,10 +41,21 @@ public class Main {
         // check root equals lowest ride time value (ride1)
         //printer.printTime(heap.heapify(4, rideArray));
 
-        heap.insert(rideArray);
-        // sort multi-heap
+        // create a multi-ride array unordered
+        Ride[] rideArray2 = {ride3, ride2, ride4, ride1};
+        // insert multi-ride array
+        //heap.insert(rideArray2);
+        heap.insert(rideArray2);
+        //heap.convertToBase1();
+
+//        // sort multi-heap
+        //heap.heapify(4, heap.rides);
         heap.sort();
-        printer.printArray(heap);
+//        // define expected order (only first and last nodes for simplicity)
+//        boolean isOrdered = heap.rides[1].compareTo(ride1) == 0 && heap.rides[4].compareTo(ride4) == 0;
+        //heap.convertToBase1();
+        // check times match
+        printer.printTime(heap);
     }
 
 } // end class

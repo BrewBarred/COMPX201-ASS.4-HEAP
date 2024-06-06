@@ -995,19 +995,19 @@ public class MinHeapTest {
      * Tests to ensure that the insert(Ride) method successfully up-heaps after a non-optimizable insertion
      */
     @Test
-    @DisplayName("Test insert(Ride): Insert a non-optimizable ride, check up-heap")
+    @DisplayName("Test insert(Ride): Insert two non-optimizable rides, check up-heap")
     public void testInsertRideNotOptimizableUpHeap() {
         // using default rides 1 and 2...
 
-        // insert valid, non-optimizable rides
+        // insert two valid, non-optimizable rides
         heap.insert(ride2);
         heap.insert(ride1);
-        // define expected and actual time at index 1
-        String expectedTime = ride1.getTime();
-        String actualTime = heap.rides[1].getTime();
+        // define expected and actual root values
+        Ride expectedRoot = ride1;
+        Ride actualRoot = heap.rides[1];
 
         // check times match
-        assertEquals(expectedTime, actualTime);
+        assertEquals(expectedRoot, actualRoot);
     }
 
     /**

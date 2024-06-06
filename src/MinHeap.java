@@ -19,7 +19,7 @@ public class MinHeap {
      *
      * True if debugging mode should be enabled, else false
      */
-    private boolean isDebugging = false;
+    private boolean isDebugging = true;
     /**
      * The number of vehicles (rides) that the company has available (i.e., the size of the heap, this is set to 21 to allow for 20 rides, since index 0 is not used
      */
@@ -96,7 +96,7 @@ public class MinHeap {
         }
 
         // prevents duplicate rides being added to the heap
-        if (hasRide(r) || isUniqueId(r) == false) {
+        if (hasRide(r) || !isUniqueId(r)) {
             debug("Unable to insert ride! Ride was already contained in the array...", "insert(Ride r)");
             return false;
         }
@@ -211,27 +211,28 @@ public class MinHeap {
         if (rideArray == null)
             return null;
 
+        int length = rideArray.length;
+
         // if the passed ride array length is greater than the max. capacity, reject it and return early
-        if (rideArray.length < 1 || rideArray.length > MAX_CAPACITY) {
+        if (length < 1 || length > MAX_CAPACITY) {
             debug("Unable to process ride array! An invalid array size was detected, array has been returned unchanged...", "heapify(int, Ride[])");
             return rideArray;
         }
 
         // if the passed ride number is out of bounds of the array
-        if (rideNum < 1 || rideNum > rideArray.length) {
+        if (rideNum < 1 || rideNum > length) {
             debug("Unable to process ride number! An invalid number of rides was detected...", "heapify(int, Ride[])");
             return rideArray;
         }
 
-        // if passed array has 0-based indices, convert to 1-based, if unsuccessfully converted, return early
-        if (!convertTo1Based()) {
+        // override existing array w/passed array
+        rides = rideArray;
+
+        // if default heap is base-0, convert to base-1 indexing, if unsuccessfully converted, return early
+        if (!convertToBase1()) {
             debug("Unable to process passed array! Array was not a convertible or valid base-1 array...", "heapify(int, Ride[])");
             return null;
         }
-
-        // override the default heap w/passed ride array
-        if (!insert(rideArray))
-            return rideArray;
 
         // get parent index based on passed ride number
         int indexParent = rideNum / 2;
@@ -254,21 +255,24 @@ public class MinHeap {
         }
 
         // if the array has 0 or 1 ride, return the default array as it is already sorted
-        if (getRideCount() < 2)
+        if (next < 2)
             return rides;
+
+        // ensure the default array is in heap order before sorting
+        heapify(next, rides);
 
         // stores the value of the next index pointer for later restoration
         int next = this.next;
         // stores the index of the last ride
         int indexLast = next - 1;
 
-        HeapPrinter p = new HeapPrinter();
-        // extracts elements from the heap one by one
+        // iterate from last leaf node until all nodes are sorted
         for(int i = indexLast; i > 0; i--) {
-            // swap the root element with the last element
-            swap(i, 1);
+            // swap the last element with the root element
+            swap(1, i);
+            // decrement heap size
             this.next--;
-            // heapify the unsorted array and repeat until all items are sorted, reducing size of heap each time using 'i'
+            // heapify starting from last unsorted node
             heapify(this.next, rides);
         }
 
@@ -276,6 +280,7 @@ public class MinHeap {
         reverseHeap();
         // restores the next index pointers position
         this.next = next;
+        // return sorted array
         return rides;
     }
 
@@ -316,7 +321,7 @@ public class MinHeap {
      */
     private void upHeap() {
         // gets the index of the last ride in the passed array
-        int indexChild = getRideCount();
+        int indexChild = next - 1;
 
         // while we have not hit the root node
         while (indexChild > 1) {
@@ -327,7 +332,7 @@ public class MinHeap {
             if (isSmaller(indexChild, indexParent))
                 swap(indexChild, indexParent);
 
-            // move to the next parent
+            // move up to the next parent
             indexChild = indexParent;
         }
     }
@@ -406,11 +411,11 @@ public class MinHeap {
     private void swap(int index1, int index2) {
         // validates the passed indices
         if (!isValidIndexes(index1, index2)) {
-            debug(String.format("Unable to swap values! Index was out of bounds... Index1 = %d, Index2 = %d, RideArray Length = %d", index1, index2, rides.length), "swap(int index1, int index2)");
+            debug(String.format("Unable to swap values! Index was out of bounds... Index1 = %d, Index2 = %d, RideArray Length = %d, Rides = %d", index1, index2, rides.length, getRideCount()), "swap(int index1, int index2)");
             return;
         }
 
-        //  if the passed array only has one value in it, there is no need to swap
+        //  if the passed array only has one value in it, there is nothing to swap with
         if (getRideCount() < 2)
             return;
 
@@ -518,7 +523,7 @@ public class MinHeap {
      * @return A boolean value that is true if the passed index is within the bounds of the heap
      */
     private boolean isValidIndex(int index) {
-        return index <= getRideCount() && index > 0;
+        return index < next && index > 0;
     }
 
     /**
@@ -563,24 +568,37 @@ public class MinHeap {
      * valid base-1 array is passed, this will be returned unchanged.
      * @return A boolean value that is true if the conversion is successful, else returns null
      */
-    private boolean convertTo1Based() {
+    public boolean convertToBase1() {
         // if the first item is null, it is probably already base 1
         if (rides[0] == null)
             return true;
 
+        // the length of the converted array
+        int length = rides.length;
+
         // if the new array will exceed the max. capacity after conversion, return false
-        if (rides.length + 1 > MAX_CAPACITY)
+        if (length + 1 > MAX_CAPACITY)
             return false;
 
-        // if the last element of the array is not blank, increment size of array
-        if (rides[rides.length - 1] != null)
-            rides = Arrays.copyOf(rides, rides.length + 1);
+        // if the last element of the array is not blank, increment size of array so all elements will fit unless
+        if (length >= next && rides[length - 1] != null)
+            length++;
+
+        // creates a temp. ride array to store elements in, this helps to remove random null elements throughout array
+        Ride[] rideArray = new Ride[length];
+        // index of next spare slot in temp array
+        int next = 1;
 
         // shifts each element in the array one position to the right
-        for (int i = rides.length - 1; i > 0; i--)
-            rides[i] = rides[i - 1];
+        for (int i = 0; i < length - 1; i++) {
+            // ignores random null elements
+            if (rides[i] != null)
+                // inserts value at next spare slot then increments next index
+                rideArray[next++] = rides[i];
+        }
 
-        rides[0] = null;
+        // override ride array and next pointer to match converted array
+        rides = rideArray;
         return true;
     }
 
