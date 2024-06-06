@@ -1,6 +1,11 @@
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.sql.Time;
 
 public class Main {
+
+    private static final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
     public static void main(String[] args) {
 
         MinHeap heap = new MinHeap();
@@ -26,14 +31,18 @@ public class Main {
 
         //heap.insert(rideArray);
         // heapify base-0 array
-        heap.heapify(4, rideArray);
+        //heap.heapify(4, rideArray);
 //        System.out.println(heap.rides[0]);
 //        System.out.println(heap.rides[1]);
 //        System.out.println(heap.rides[2]);
 //        System.out.println(heap.rides[3]);
         // check root equals lowest ride time value (ride1)
-        printer.printTime(heap.heapify(4, rideArray));
+        //printer.printTime(heap.heapify(4, rideArray));
 
+        heap.insert(rideArray);
+        // sort multi-heap
+        heap.sort();
+        printer.printArray(heap);
     }
 
 } // end class

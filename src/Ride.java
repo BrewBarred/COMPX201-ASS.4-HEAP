@@ -264,4 +264,4 @@ public class Ride implements Comparable<Ride> {
             System.out.println(String.format("[Ride : %s] %s", function.toUpperCase(), msg));
     }
 
-} // end class
+}
