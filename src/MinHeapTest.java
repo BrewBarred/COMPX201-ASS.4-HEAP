@@ -1639,7 +1639,17 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test dump(): Attempt to dump a null heap, check error")
     public void testDumpHeapNull() {
+        // set the heap to null
+        heap.rides = null;
 
+        // attempt to dump the null heap
+        heap.dump();
+        // define the expected and actual outputs
+        String expectedOutput = "[MinHeap : dump()] Unable to dump heap! Heap was null or empty...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -1648,7 +1658,16 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test dump(): Attempt to dump an empty heap, check error")
     public void testDumpHeapEmpty() {
+        // heap is empty by default, no need for further arrangement...
 
+        // attempt to dump the null heap
+        heap.dump();
+        // define the expected and actual outputs
+        String expectedOutput = "[MinHeap : dump()] Unable to dump heap! Heap was null or empty...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -1657,7 +1676,22 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test dump(): Dump a single-heap, check output")
     public void testDumpHeapSingle() {
+        // insert a single ride into the heap
+        heap.insert(ride1);
 
+        // dump the single-heap
+        heap.dump();
+        // define expected and actual outputs
+        String expectedOutput = String.format("--- Ride %03d -------\n", ride1.id) +
+                String.format("Time: %tT\n", ride1.time) +
+                String.format("Start ID: %d\n", ride1.startId) +
+                String.format("End ID: %d\n", ride1.endId) +
+                String.format("Passengers:\n%s", ride1.fPassengers()) +
+                "--------------------";
+        String actualOutput = getStream();
+
+        // check output
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -1666,10 +1700,45 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test dump(): Dump a multi-heap, check output")
     public void testDumpHeapMulti() {
+        // using defaultRides array... insert ride array
+        heap.insert(defaultRides);
 
+        // dump multi-heap
+        heap.dump();
+        // define expectedOutput
+        String expectedOutput =
+                String.format("--- Ride %03d -------\n", ride1.id) +
+                String.format("Time: %tT\n", ride1.time) +
+                String.format("Start ID: %d\n", ride1.startId) +
+                String.format("End ID: %d\n", ride1.endId) +
+                String.format("Passengers:\n%s", ride1.fPassengers()) +
+                "--------------------\n" +
+                String.format("--- Ride %03d -------\n", ride2.id) +
+                String.format("Time: %tT\n", ride2.time) +
+                String.format("Start ID: %d\n", ride2.startId) +
+                String.format("End ID: %d\n", ride2.endId) +
+                String.format("Passengers:\n%s", ride2.fPassengers()) +
+                "--------------------\n" +
+                String.format("--- Ride %03d -------\n", ride3.id) +
+                String.format("Time: %tT\n", ride3.time) +
+                String.format("Start ID: %d\n", ride3.startId) +
+                String.format("End ID: %d\n", ride3.endId) +
+                String.format("Passengers:\n%s", ride3.fPassengers()) +
+                "--------------------\n" +
+                String.format("--- Ride %03d -------\n", ride4.id) +
+                String.format("Time: %tT\n", ride4.time) +
+                String.format("Start ID: %d\n", ride4.startId) +
+                String.format("End ID: %d\n", ride4.endId) +
+                String.format("Passengers:\n%s", ride4.fPassengers()) +
+                "--------------------";
+        // define actual output replacing any carriage returns with standard new lines
+        String actualOutput = getStream().replace("\r\n", "\n");
+
+        // check output
+        assertEquals(expectedOutput, actualOutput);
     }
 
-// Test sectionL sort()
+// Test section sort()
 
     /**
      * Tests to ensure that the sort() method returns an error when attempting to sort a null heap
@@ -1677,7 +1746,17 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test sort(): Attempt to sort a null heap, check error")
     public void testSortHeapNull() {
+        // set heap to null
+        heap.rides = null;
 
+        // heap null heap
+        heap.sort();
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : sort()] Unable to sort heap! Default ride array was null or empty...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
@@ -1686,25 +1765,55 @@ public class MinHeapTest {
     @Test
     @DisplayName("Test sort(): Sort an empty heap, check unchanged")
     public void testSortHeapEmpty() {
+        // heap is empty by default, no need for further arrangement...
 
+        // sort empty heap
+        heap.sort();
+        // define expected and actual outputs
+        String expectedOutput = "[MinHeap : sort()] Unable to sort heap! Default ride array was null or empty...";
+        String actualOutput = getStream();
+
+        // check error message
+        assertEquals(expectedOutput, actualOutput);
     }
 
     /**
      * Tests to ensure that the sort() method correctly sorts a heap w/single ride
      */
     @Test
-    @DisplayName("Test sort(): Sort a single-heap, check output")
+    @DisplayName("Test sort(): Sort a single-heap, check root")
     public void testSortHeapSingle() {
+        // using default ride1... insert a single ride
+        heap.insert(ride1);
 
+        // sort single heap
+        heap.sort();
+        // define expected and actual roots
+        Ride expectedRoot = ride1;
+        Ride actualRoot = heap.rides[1];
+
+        // check output array
+        assertEquals(expectedRoot, actualRoot);
     }
 
     /**
      * Tests to ensure that the sort() method correctly sorts a heap w/multiple rides
      */
     @Test
-    @DisplayName("Test sort(): Sort a multi-heap, check output")
+    @DisplayName("Test sort(): Sort a multi-heap, check order")
     public void testSortHeapMulti() {
+        // create a multi-ride array unordered
+        Ride[] rideArray = {ride3, ride2, ride4, ride1};
+        // insert multi-ride array
+        heap.insert(rideArray);
 
+        // sort multi-heap
+        heap.sort();
+        // define expected order (only first and last nodes for simplicity)
+        boolean isOrdered = heap.rides[1].compareTo(ride1) == 0 && heap.rides[4].compareTo(ride4) == 0;
+
+        // check first and last nodes match expected order
+        assertTrue(isOrdered);
     }
 
     /**

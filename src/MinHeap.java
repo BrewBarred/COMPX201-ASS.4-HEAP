@@ -247,7 +247,13 @@ public class MinHeap {
      * @return A ride array sorted into ascending order
      */
     public Ride[] sort() {
-        // if the array has 0 or 1 ride, return the passed array as it is already sorted
+        // return early if the default heap is null or empty
+        if (rides == null || getRideCount() == 0) {
+            debug("Unable to sort heap! Default ride array was null or empty...", "sort()");
+            return null;
+        }
+
+        // if the array has 0 or 1 ride, return the default array as it is already sorted
         if (getRideCount() < 2)
             return rides;
 
@@ -256,14 +262,14 @@ public class MinHeap {
         // stores the index of the last ride
         int indexLast = next - 1;
 
+        HeapPrinter p = new HeapPrinter();
         // extracts elements from the heap one by one
         for(int i = indexLast; i > 0; i--) {
             // swap the root element with the last element
             swap(i, 1);
-            //ridesSorted[indexLast - i + 1] = ride;
             this.next--;
             // heapify the unsorted array and repeat until all items are sorted, reducing size of heap each time using 'i'
-            heapify(i, rides);
+            heapify(this.next, rides);
         }
 
         // reverse the array since the sort method leaves it backwards
@@ -288,6 +294,11 @@ public class MinHeap {
      * Dumps the ride info of the default heap to the console by iterating through the heap and calling Ride.toString on each ride.
      */
     public void dump() {
+        if (rides == null || getRideCount() == 0) {
+            debug("Unable to dump heap! Heap was null or empty...", "dump()");
+            return;
+        }
+
         for (Ride ride : rides)
             if (ride != null)
                 System.out.println(ride);
